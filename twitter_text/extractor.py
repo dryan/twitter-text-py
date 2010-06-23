@@ -1,5 +1,5 @@
 from regex import REGEXEN
-from twitter_text import force_unicode
+from twitter_text.unicode import force_unicode
 
 class Extractor(object):
     """
