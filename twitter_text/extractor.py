@@ -47,7 +47,7 @@ class Extractor(object):
             else:
                 possible_screen_name = {
                     'screen_name': match.group(0),
-                    'indicies': (match.start(), match.stop())
+                    'indicies': (match.start(), match.end())
                 }
             possible_screen_names.append(possible_screen_name)
             del(possible_screen_name)
@@ -102,7 +102,7 @@ class Extractor(object):
             else:
                 url = {
                     'url': match.group(0),
-                    'indices': (match.start(), match.stop())
+                    'indices': (match.start(), match.end())
                 }
             urls.append(url)
             del(url)
@@ -146,7 +146,7 @@ class Extractor(object):
             else:
                 tag = {
                     'hashtag': match.group(0),
-                    'indices': (match.start(), match.stop())
+                    'indices': (match.start(), match.end())
                 }
             tags.append(tag)
             del(tag)
