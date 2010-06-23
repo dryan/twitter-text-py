@@ -1,4 +1,4 @@
-#  encoding: utf-8
+#  encoding=utf-8
 
 # A collection of regular expressions for parsing Tweet text. The regular expression
 # list is frozen at load time to ensure immutability. These reular expressions are

@@ -1,3 +1,5 @@
+# encoding=utf-8
+
 from twitter_text.autolink import Autolink
 from twitter_text.extractor import Extractor
 from twitter_text.highlighter import HitHighlighter
