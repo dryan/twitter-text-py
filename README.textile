@@ -166,7 +166,7 @@ The @<em></em>@ tags or css class can be overridden using the highlight_tag and/
         => "test <strong class='search-term'>hit</strong> here"</code></pre>
 
 	
-h2. Validation(text)
+<h2>Validation(text)</h2>
 
 h3. Methods
 
@@ -183,7 +183,8 @@ The NFC of {U+0065, U+0301} is {U+00E9}, which is a single character and a displ
 
 The string could also contain U+00E9 already, in which case the canonicalization will not change the value.
 
-def tweet_invalid(self):
+h4. tweet_invalid(self)
+
 Check the text for any reason that it may not be valid as a Tweet. This is meant as a pre-validation before posting to api.twitter.com. There are several server-side reasons for Tweets to fail but this pre-validation will allow quicker feedback.
 
 Returns false if this text is valid. Otherwise one of the following Symbols will be returned:
