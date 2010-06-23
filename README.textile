@@ -58,7 +58,7 @@ Add @<a></a>@ tags around the usernames, lists, hashtags and URLs in the provide
 
 h4. auto_link_usernames_or_lists(self, **kwargs)
 
-Add @<a></a>@ tags around the usernames and lists in the provided text. The <a> tags can be controlled with the following kwargs:
+Add @<a></a>@ tags around the usernames and lists in the provided text. The @<a>@ tags can be controlled with the following kwargs:
 
 * url_class:     class to add to all @<a>@ tags
 * list_class:    class to add to list @<a>@ tags
