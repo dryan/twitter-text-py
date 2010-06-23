@@ -43,12 +43,12 @@ h3. Methods:
 
 h4. auto_link(self, **kwargs)
 
-Add <a></a> tags around the usernames, lists, hashtags and URLs in the provided text. The <a> tags can be controlled with the following kwargs:
+Add @<a></a>@ tags around the usernames, lists, hashtags and URLs in the provided text. The @<a>@ tags can be controlled with the following kwargs:
 
-* url_class:     class to add to all <a> tags
-* list_class:    class to add to list <a> tags
-* username_class:    class to add to username <a> tags
-* hashtag_class:    class to add to hashtag <a> tags
+* url_class:     class to add to all @<a>@ tags
+* list_class:    class to add to list @<a>@ tags
+* username_class:    class to add to username @<a>@ tags
+* hashtag_class:    class to add to hashtag @<a>@ tags
 * username_url_base:      the value for href attribute on username links. The @username (minus the @) will be appended at the end of this.
 * list_url_base:      the value for href attribute on list links. The @username/list (minus the @) will be appended at the end of this.
 * hashtag_url_base:      the value for href attribute on hashtag links. The #hashtag (minus the #) will be appended at the end of this.
@@ -58,11 +58,11 @@ Add <a></a> tags around the usernames, lists, hashtags and URLs in the provided 
 
 h4. auto_link_usernames_or_lists(self, **kwargs)
 
-Add <a></a> tags around the usernames and lists in the provided text. The <a> tags can be controlled with the following kwargs:
+Add @<a></a>@ tags around the usernames and lists in the provided text. The <a> tags can be controlled with the following kwargs:
 
-* url_class:     class to add to all <a> tags
-* list_class:    class to add to list <a> tags
-* username_class:    class to add to username <a> tags
+* url_class:     class to add to all @<a>@ tags
+* list_class:    class to add to list @<a>@ tags
+* username_class:    class to add to username @<a>@ tags
 * username_url_base:      the value for href attribute on username links. The @username (minus the @) will be appended at the end of this.
 * list_url_base:      the value for href attribute on list links. The @username/list (minus the @) will be appended at the end of this.
 * suppress_lists:    disable auto-linking to lists
@@ -70,16 +70,16 @@ Add <a></a> tags around the usernames and lists in the provided text. The <a> ta
 
 h4. auto_link_hashtags(self, **kwargs)
 
-Add <a></a> tags around the hashtags in the provided text. The <a> tags can be controlled with the following kwargs:
+Add @<a></a>@ tags around the hashtags in the provided text. The @<a>@ tags can be controlled with the following kwargs:
 
-* url_class:     class to add to all <a> tags
-* hashtag_class: class to add to hashtag <a> tags
+* url_class:     class to add to all @<a>@ tags
+* hashtag_class: class to add to hashtag @<a>@ tags
 * hashtag_url_base:      the value for href attribute. The hashtag text (minus the #) will be appended at the end of this.
 * suppress_no_follow:   Do not add rel="nofollow" to auto-linked items
 
 h4. auto_link_urls_custom(self, **kwargs)
 
-Add <a></a> tags around the URLs in the provided text. Any elements in kwargs (except @supress_no_follow@) will be converted to HTML attributes and place in the <a> tag. Unless kwargs contains @suppress_no_follow@ the rel="nofollow" attribute will be added.
+Add @<a></a>@ tags around the URLs in the provided text. Any elements in kwargs (except @supress_no_follow@) will be converted to HTML attributes and place in the @<a>@ tag. Unless kwargs contains @suppress_no_follow@ the rel="nofollow" attribute will be added.
 
 h2. Extractor(text)
 
