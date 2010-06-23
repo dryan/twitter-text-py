@@ -27,7 +27,7 @@ class Validation(object):
         +   U+0301  Combining Acute Accent
         ----------
         =   2 bytes, 2 characters, displayed as é (1 visual glyph)
-        … The NFC of {U+0065, U+0301} is {U+00E9}, which is a single chracter and a +display_length+ of 1
+        … The NFC of {U+0065, U+0301} is {U+00E9}, which is a single character and a +display_length+ of 1
         
         The string could also contain U+00E9 already, in which case the canonicalization will not change the value.
         """

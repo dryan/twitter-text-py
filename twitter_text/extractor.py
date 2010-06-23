@@ -17,8 +17,7 @@ class Extractor(object):
         Extracts a list of all usernames mentioned in the Tweet text. If the
         text contains no username mentions an empty list will be returned.
         
-        If a transform is given, then it will be called with each username, the start
-        index, and the end index in the text.
+        If a transform is given, then it will be called with each username.
         """
         screen_names_only = []
         matches = self.extract_mentioned_screen_names_with_indices()
@@ -44,7 +43,7 @@ class Extractor(object):
         matches = REGEXEN['extract_mentions'].finditer(self.text)
         for match in matches:
             if transform:
-                possible_screen_name = transform(match.group(0), match.start(), match.stop())
+                possible_screen_name = transform(match.group(0), match.start(), match.end())
             else:
                 possible_screen_name = {
                     'screen_name': match.group(0),
@@ -58,8 +57,8 @@ class Extractor(object):
         
     def extract_reply_screen_name(self, transform = False):
         """
-        Extracts the username username replied to in the Tweet text. If the
-        text is not a reply None will be returned.
+        Extracts the first username replied to in the Tweet text. If the
+        text does not contain a reply None will be returned.
         
         If a transform is given then it will be called with the username replied to (if any)
         """
@@ -72,7 +71,7 @@ class Extractor(object):
     def extract_urls(self, transform = False):
         """
         Extracts a list of all URLs included in the Tweet text. If the
-        text contains no URLs an empty array will be returned.
+        text contains no URLs an empty list will be returned.
         
         If a transform is given then it will be called for each URL.
         """
@@ -90,7 +89,7 @@ class Extractor(object):
     def extract_urls_with_indices(self, transform = False):
         """
         Extracts a list of all URLs included in the Tweet text along
-        with the indices. If the text contains no URLs an empty array
+        with the indices. If the text contains no URLs an empty list
         will be returned.
         
         If a transform is given then it will be called for each URL.
@@ -99,7 +98,7 @@ class Extractor(object):
         matches = REGEXEN['valid_url'].finditer(self.text)
         for match in matches:
             if transform:
-                url = transform(match.group(0), match.start(), match.stop())
+                url = transform(match.group(0), match.start(), match.end())
             else:
                 url = {
                     'url': match.group(0),
@@ -115,7 +114,7 @@ class Extractor(object):
         """
         Extracts a list of all hashtags included in the Tweet text. If the
         text contains no hashtags an empty list will be returned.
-        The array returned will not include the leading # character.
+        The list returned will not include the leading # character.
         
         If a transform is given then it will be called for each hashtag.
         """
@@ -134,8 +133,8 @@ class Extractor(object):
     def extract_hashtags_with_indices(self, transform = False):
         """
         Extracts a list of all hashtags included in the Tweet text. If the
-        text contains no hashtags an empty array will be returned.
-        The array returned will not include the leading # character.
+        text contains no hashtags an empty list will be returned.
+        The list returned will not include the leading # character.
         
         If a transform is given then it will be called for each hashtag.
         """
@@ -143,7 +142,7 @@ class Extractor(object):
         matches = REGEXEN['auto_link_hashtags'].finditer(self.text)
         for match in matches:
             if transform:
-                tag = transform(match.group(0), match.start(), match.stop())
+                tag = transform(match.group(0), match.start(), match.end())
             else:
                 tag = {
                     'hashtag': match.group(0),

@@ -16,6 +16,14 @@ class HitHighlighter(object):
         self.parent = kwargs.get('parent', False)
 
     def hit_highlight(self, query, **kwargs):
+        """
+        Add <em></em> tags around occurrences of query provided in the text except for occurrences inside of hashtags.
+        
+        The <em></em> tags can be overridden using the highlight_tag kwarg. For example:
+        
+        python> HitHighlighter('test hit here').hit_highlight(highlight_tag = 'strong', highlight_class = 'search-term')
+                => "test <strong class='search-term'>hit</strong> here"
+        """
         defaults = {
             'highlight_tag': kwargs.get('highlight_tag', self.DEFAULT_HIGHLIGHT_TAG).lower(),
             'highlight_class': kwargs.get('highlight_class', self.DEFAULT_HIGHLIGHT_CLASS).lower(),

@@ -37,7 +37,7 @@ class Autolink(object):
         hashtag_url_base::      the value for href attribute on hashtag links. The #hashtag (minus the #) will be appended at the end of this.
         suppress_lists::    disable auto-linking to lists
         suppress_no_follow::   Do not add rel="nofollow" to auto-linked items
-        html_attrs::    A dictionary of HTML attributes to add to non-Twitter URLS
+        html_attrs::    A dictionary of HTML attributes to add to non-Twitter links
         """
         self.auto_link_urls_custom(**kwargs.get('html_attrs', {}))
         self.auto_link_hashtags(**kwargs)
@@ -140,7 +140,7 @@ class Autolink(object):
         """
         Add <a></a> tags around the URLs in the provided text. Any
         elements in kwargs will be converted to HTML attributes
-        and place in the <a> tag. Unless kwargs contains :suppress_no_follow
+        and place in the <a> tag. Unless kwargs contains suppress_no_follow
         the rel="nofollow" attribute will be added.
         """
         defaults = {}
