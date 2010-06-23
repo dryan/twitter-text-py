@@ -4,6 +4,13 @@ h1. Usage
 
 You can either call a new TwitterText object with the text of the tweet you want to process @TwitterText('twitter-text-py is #awesome')@ or use any of the submodule objects directly (Autolink, Extractor, HitHighlighter or Validation), passing in the tweet text as an argument.
 
+The library also contains a Django template filter that applies the auto_link method to the passed in text. It can also optionally apply the hit_highlight method. Example:
+
+<pre><code>{% load twitterize %}
+	
+{{ obj.body|twitter_text }} <!-- just add the links -->
+{{ obj.body|twitter_text:"my term" }} <!-- add the links and highlight the search term --></code></pre>
+
 h2. TwitterText(text)
 
 h3. Properties:
