@@ -1,5 +1,9 @@
+# encoding: utf-8
+
 import re
 from regex import REGEXEN
+
+from twitter_text import force_unicode
 
 class Autolink(object):
     
@@ -16,7 +20,7 @@ class Autolink(object):
     HTML_ATTR_NO_FOLLOW = ' rel="nofollow"'
 
     def __init__(self, text, **kwargs):
-        self.text = unicode(text)
+        self.text = force_unicode(text)
         self.parent = kwargs.get('parent', False)
 
     def auto_link(self, **kwargs):
@@ -38,8 +42,11 @@ class Autolink(object):
         self.auto_link_urls_custom(**kwargs.get('html_attrs', {}))
         self.auto_link_hashtags(**kwargs)
         self.auto_link_usernames_or_lists(**kwargs)
+
         if self.parent and hasattr(self.parent, 'text'):
             self.parent.text = self.text
+        if self.parent and hasattr(self.parent, 'has_been_linked'):
+            self.parent.has_been_linked = True
 
         return self.text
     
@@ -84,6 +91,8 @@ class Autolink(object):
 
         if self.parent and hasattr(self.parent, 'text'):
             self.parent.text = self.text
+        if self.parent and hasattr(self.parent, 'has_been_linked'):
+            self.parent.has_been_linked = True
 
         del(matches)
         del(extra_html)
@@ -117,6 +126,8 @@ class Autolink(object):
 
         if self.parent and hasattr(self.parent, 'text'):
             self.parent.text = self.text
+        if self.parent and hasattr(self.parent, 'has_been_linked'):
+            self.parent.has_been_linked = True
 
         del(matches)
         del(extra_html)
@@ -152,13 +163,19 @@ class Autolink(object):
             full_url = match.group(2)
             if match.group(3).find('http') == -1:
                 full_url = u'http://%s' % full_url
-            _link = '%s<a href="%s"%s>%s</a>' % ( match.group(1), match.group(2), html_attrs, match.group(4) )
+            display_url = full_url
+            if len(display_url) > 30:
+                display_url = u'%s…' % display_url[0:30]
+            _link = '%s<a href="%s"%s>%s</a>' % ( match.group(1), full_url, html_attrs, display_url )
             self.text = self.text.replace(match.group(0), _link)
             del(_link)
             del(full_url)
+            del(display_url)
 
         if self.parent and hasattr(self.parent, 'text'):
             self.parent.text = self.text
+        if self.parent and hasattr(self.parent, 'has_been_linked'):
+            self.parent.has_been_linked = True
     
         del(matches)
         del(html_attrs)

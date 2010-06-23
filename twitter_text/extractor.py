@@ -1,4 +1,5 @@
 from regex import REGEXEN
+from twitter_text import force_unicode
 
 class Extractor(object):
     """
@@ -7,7 +8,7 @@ class Extractor(object):
     """
     
     def __init__(self, text):
-        self.text = unicode(text)
+        self.text = force_unicode(text)
     
     def extract_mentioned_screen_names(self, transform = False):
         """
