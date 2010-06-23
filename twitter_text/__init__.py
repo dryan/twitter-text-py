@@ -1,6 +1,6 @@
-from autolink import Autolink
-from extractor import Extractor
-from highlighter import HitHighlighter
+from twitter_text.autolink import Autolink
+from twitter_text.extractor import Extractor
+from twitter_text.highlighter import HitHighlighter
 from twitter_text.unicode import force_unicode
 
 class TwitterText(object):

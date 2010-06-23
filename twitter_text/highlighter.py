@@ -1,6 +1,6 @@
 import re
 
-from regex import UNICODE_SPACES
+from twitter_text.regex import UNICODE_SPACES
 from twitter_text.unicode import force_unicode
 
 class HitHighlighter(object):

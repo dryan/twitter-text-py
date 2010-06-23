@@ -2,7 +2,7 @@
 
 import re
 
-from regex import REGEXEN
+from twitter_text.regex import REGEXEN
 from twitter_text.unicode import force_unicode
 
 class Autolink(object):
