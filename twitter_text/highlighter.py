@@ -21,7 +21,7 @@ class HitHighlighter(object):
         
         The <em></em> tags can be overridden using the highlight_tag kwarg. For example:
         
-        python> HitHighlighter('test hit here').hit_highlight(highlight_tag = 'strong', highlight_class = 'search-term')
+        python> HitHighlighter('test hit here').hit_highlight('hit', highlight_tag = 'strong', highlight_class = 'search-term')
                 => "test <strong class='search-term'>hit</strong> here"
         """
         defaults = {

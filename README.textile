@@ -162,8 +162,8 @@ Add @<em></em>@ tags around occurrences of query provided in the text except for
 
 The @<em></em>@ tags or css class can be overridden using the highlight_tag and/or highlight_class kwarg. For example:
 
-<pre><code>python> HitHighlighter('test hit here').hit_highlight(highlight_tag = 'strong', highlight_class = 'search-term')
-		=> "test <strong class='search-term'>hit</strong> here"</code></pre>
+<pre><code>python> HitHighlighter('test hit here').hit_highlight('hit', highlight_tag = 'strong', highlight_class = 'search-term')
+        => "test <strong class='search-term'>hit</strong> here"</code></pre>
 
 	
 h2. Validation(text)
