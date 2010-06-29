@@ -34,8 +34,8 @@ class HitHighlighter(object):
         tags = ( u'<%s class="%s">' % ( kwargs.get('highlight_tag'), kwargs.get('highlight_class') ), u'</%s>' % kwargs.get('highlight_tag') )
         
         tag_search = re.compile(r'(<[^>]+>)')
-        
-        assert ( self.parent and not getattr(self.parent, 'has_been_linked', False) ) or tag_search.match(self.text), 'This text has already has HTML tags present. We can\'t highlight that reliably.' # make sure links have not already been run on this text
+
+        assert ( not self.parent or not getattr(self.parent, 'has_been_linked', False) ) and tag_search.match(self.text) is None, 'This text has already has HTML tags present. We can\'t highlight that reliably.' # make sure links have not already been run on this text
         del(tag_search)
         
         query_search = re.compile(ur'%s' % query, re.IGNORECASE)
