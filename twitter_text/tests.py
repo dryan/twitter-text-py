@@ -427,6 +427,35 @@ def validation_tests(tests, passed, failed):
     tests += 1
     
     return tests, passed, failed
+    
+def templatetag_tests(tests, passed, failed):
+    print u'Running Django templatetag tests'
+    from twitter_text.templatetags import twitterize
+
+    correct_auto_link = u'<a class="tweet-url username" href="http://twitter.com/foo" rel="nofollow">@foo</a> said the funniest thing to <a class="tweet-url username" href="http://twitter.com/monkeybat" rel="nofollow">＠monkeybat</a> and <a class="tweet-url username" href="http://twitter.com/bar" rel="nofollow">@bar</a> <a href="http://dryan.net/xxxxx?param=true#hash" rel="nofollow">http://dryan.net/xxxxx?param=t…</a> <a href="http://twitter.com/search?q=%23comedy" title="#comedy" class="tweet-url hashtag" rel="nofollow">#comedy</a> <a href="http://twitter.com/search?q=%23url" title="#url" class="tweet-url hashtag" rel="nofollow">#url</a>'
+    correct_auto_link_with_hit_highlight = u'<a class="tweet-url username" href="http://twitter.com/foo" rel="nofollow">@foo</a> said the <em class="search-hit">funniest</em> thing to <a class="tweet-url username" href="http://twitter.com/monkeybat" rel="nofollow">＠monkeybat</a> and <a class="tweet-url username" href="http://twitter.com/bar" rel="nofollow">@bar</a> <a href="http://dryan.net/xxxxx?param=true#hash" rel="nofollow">http://dryan.net/xxxxx?param=t…</a> <a href="http://twitter.com/search?q=%23comedy" title="#comedy" class="tweet-url hashtag" rel="nofollow">#comedy</a> <a href="http://twitter.com/search?q=%23url" title="#url" class="tweet-url hashtag" rel="nofollow">#url</a>'
+    
+    if twitterize.twitter_text(text) == correct_auto_link:
+        print u'\033[92m  Django templatetag with no search term passed\033[0m'
+        passed += 1
+    else:
+        print u'\033[91m  Django templatetag with no search term failed:\033[0m'
+        print u'    Expected: %s' % correct_auto_link
+        print u'    Returned: %s' % twitterize.twitter_text(text)
+        failed += 1
+    tests += 1
+
+    if twitterize.twitter_text(text, 'funniest') == correct_auto_link_with_hit_highlight:
+        print u'\033[92m  Django templatetag with search term passed\033[0m'
+        passed += 1
+    else:
+        print u'\033[91m  Django templatetag with search term failed:\033[0m'
+        print u'    Expected: %s' % correct_auto_link_with_hit_highlight
+        print u'    Returned: %s' % twitterize.twitter_text(text, 'funniest')
+        failed += 1
+    tests += 1
+    
+    return tests, passed, failed
 
 def run_all():
     tests, passed, failed = 0, 0, 0
@@ -441,6 +470,9 @@ def run_all():
 
     print ''
     tests, passed, failed = autolink_tests(tests, passed, failed)
+
+    print ''
+    tests, passed, failed = templatetag_tests(tests, passed, failed)
 
     print ''
     print u'Checking hit_highlight assertion that text does not have HTML tags already present'
