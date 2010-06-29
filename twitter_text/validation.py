@@ -53,13 +53,13 @@ class Validation(object):
 
         valid = True # optimism
         validation_error = None
-        invalid_characters = re.compile(r'(%s)' % r'|'.join(self.INVALID_CHARACTERS), re.IGNORECASE)
+        invalid_characters = re.compile(ur'(%s)' % ur'|'.join(self.INVALID_CHARACTERS), re.IGNORECASE)
 
         if not self.tweet_length():
             valid, validation_error = False, 'Empty text'
         if self.tweet_length() > self.MAX_LENGTH:
             valid, validation_error = False, 'Too long'
-        if invalid_characters.match(self.text):
+        if invalid_characters.search(self.text):
             valid, validation_error = False, 'Invalid characters'
             
         if self.parent and hasattr(self.parent, 'tweet_is_valid'):
