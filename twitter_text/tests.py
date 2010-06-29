@@ -154,7 +154,7 @@ def extractor_tests(tests, passed, failed):
 
     correct_mentioned_screen_names = [u'@foo', u'＠monkeybat', u'@bar']
     correct_mentioned_screen_names_with_indices = [{'indicies': (0, 4), 'screen_name': u'@foo'}, {'indicies': (32, 42), 'screen_name': u'＠monkeybat'}, {'indicies': (47, 51), 'screen_name': u'@bar'}]
-    correct_reply_screen_name = '@foo'
+    correct_reply_screen_name = 'foo'
     correct_urls = [u'http://dryan.net/xxxxx?param=true#hash']
     correct_urls_with_indices = [{'url': u'http://dryan.net/xxxxx?param=true#hash', 'indices': (52, 90)}]
     correct_hashtags = [u'comedy', u'url']
