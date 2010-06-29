@@ -42,13 +42,13 @@ class Extractor(object):
         possible_screen_names = []
         matches = REGEXEN['extract_mentions'].finditer(self.text)
         for match in matches:
-            start = match.start() + len(match.group(1))
-            end = start + len(match.group(2))
+            start = match.start() + len(match.group(1)) + len(match.group(2))
+            end = start + len(match.group(3))
             if transform:
-                possible_screen_name = transform(match.group(2), start, end)
+                possible_screen_name = transform(match.group(3), start, end)
             else:
                 possible_screen_name = {
-                    'screen_name': match.group(2),
+                    'screen_name': match.group(3),
                     'indicies': (start, end)
                 }
             possible_screen_names.append(possible_screen_name)

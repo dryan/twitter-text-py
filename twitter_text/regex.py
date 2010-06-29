@@ -17,7 +17,7 @@ for space in [9, 10, 11, 12, 13, 32, 133, 160, 5760, 6158, 8192, 8193, 8194, 819
 REGEXEN['spaces'] = re.compile(ur'|'.join(UNICODE_SPACES))
 
 REGEXEN['at_signs'] = re.compile(ur'[%s]' % ur'|'.join(list(u'@＠')))
-REGEXEN['extract_mentions'] = re.compile(ur'(^|[^a-zA-Z0-9_])(%s[a-zA-Z0-9_]{1,20})(?=(.|$))' % REGEXEN['at_signs'].pattern)
+REGEXEN['extract_mentions'] = re.compile(ur'(^|[^a-zA-Z0-9_])(%s)([a-zA-Z0-9_]{1,20})(?=(.|$))' % REGEXEN['at_signs'].pattern)
 REGEXEN['extract_reply'] = re.compile(ur'^(?:[%s])*%s([a-zA-Z0-9_]{1,20})' % (REGEXEN['spaces'].pattern, REGEXEN['at_signs'].pattern))
 
 REGEXEN['list_name'] = re.compile(ur'^[a-zA-Z\u0080-\u00ff].{0,79}$')
