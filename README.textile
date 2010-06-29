@@ -11,6 +11,8 @@ The library also contains a Django template filter that applies the auto_link me
 {{ obj.body|twitter_text }} <!-- just add the links -->
 {{ obj.body|twitter_text:"my term" }} <!-- add the links and highlight the search term --></code></pre>
 
+You can test that the library is working correctly by running @python tests.py@ inside the @twitter_text@ directory.
+
 h2. TwitterText(text)
 
 h3. Properties:
