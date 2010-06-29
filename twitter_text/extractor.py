@@ -49,7 +49,7 @@ class Extractor(object):
             else:
                 possible_screen_name = {
                     'screen_name': match.group(3),
-                    'indicies': (start, end)
+                    'indices': (start, end)
                 }
             possible_screen_names.append(possible_screen_name)
             del(possible_screen_name)
