@@ -42,12 +42,14 @@ class Extractor(object):
         possible_screen_names = []
         matches = REGEXEN['extract_mentions'].finditer(self.text)
         for match in matches:
+            start = match.start() + len(match.group(1))
+            end = start + len(match.group(2))
             if transform:
-                possible_screen_name = transform(match.group(0), match.start(), match.end())
+                possible_screen_name = transform(match.group(2), start, end)
             else:
                 possible_screen_name = {
-                    'screen_name': match.group(0),
-                    'indicies': (match.start(), match.end())
+                    'screen_name': match.group(2),
+                    'indicies': (start, end)
                 }
             possible_screen_names.append(possible_screen_name)
             del(possible_screen_name)
@@ -62,7 +64,9 @@ class Extractor(object):
         
         If a transform is given then it will be called with the username replied to (if any)
         """
-        possible_screen_name = REGEXEN['extract_reply'].match(self.text).group(0)
+        possible_screen_name = REGEXEN['extract_reply'].match(self.text)
+        if possible_screen_name is not None:
+            possible_screen_name = possible_screen_name.group(1)
         if transform:
             possible_screen_name = transform(possible_screen_name)
         del(transform)
@@ -97,12 +101,14 @@ class Extractor(object):
         urls = []
         matches = REGEXEN['valid_url'].finditer(self.text)
         for match in matches:
+            start = match.start() + len(match.group(1))
+            end = start + len(match.group(2))
             if transform:
-                url = transform(match.group(0), match.start(), match.end())
+                url = transform(match.group(2), start, end)
             else:
                 url = {
-                    'url': match.group(0),
-                    'indices': (match.start(), match.end())
+                    'url': match.group(2),
+                    'indices': (start, end)
                 }
             urls.append(url)
             del(url)
@@ -141,12 +147,14 @@ class Extractor(object):
         tags = []
         matches = REGEXEN['auto_link_hashtags'].finditer(self.text)
         for match in matches:
+            start = match.start() + len(match.group(1)) + len(match.group(2))
+            end = start + len(match.group(3))
             if transform:
-                tag = transform(match.group(0), match.start(), match.end())
+                tag = transform(match.group(3), start, end)
             else:
                 tag = {
-                    'hashtag': match.group(0),
-                    'indices': (match.start(), match.end())
+                    'hashtag': match.group(3),
+                    'indices': (start, end)
                 }
             tags.append(tag)
             del(tag)
