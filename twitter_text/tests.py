@@ -1,6 +1,7 @@
 # encoding=utf-8
 
 import twitter_text
+from twitter_text.unicode import force_unicode
 
 text = '@foo said the funniest thing to ＠monkeybat and @bar http://dryan.net/xxxxx?param=true#hash #comedy #url'
 tt = twitter_text.TwitterText(text)
@@ -9,6 +10,7 @@ def autolink_tests(tests, passed, failed):
     print u'Running Autolink tests'
 
     correct_auto_link = u'<a class="tweet-url username" href="http://twitter.com/foo" rel="nofollow">@foo</a> said the funniest thing to <a class="tweet-url username" href="http://twitter.com/monkeybat" rel="nofollow">＠monkeybat</a> and <a class="tweet-url username" href="http://twitter.com/bar" rel="nofollow">@bar</a> <a href="http://dryan.net/xxxxx?param=true#hash" rel="nofollow">http://dryan.net/xxxxx?param=t…</a> <a href="http://twitter.com/search?q=%23comedy" title="#comedy" class="tweet-url hashtag" rel="nofollow">#comedy</a> <a href="http://twitter.com/search?q=%23url" title="#url" class="tweet-url hashtag" rel="nofollow">#url</a>'
+    correct_auto_link_with_hit_highlight = u'<a class="tweet-url username" href="http://twitter.com/foo" rel="nofollow">@foo</a> said the <em class="search-hit">funniest</em> thing to <a class="tweet-url username" href="http://twitter.com/monkeybat" rel="nofollow">＠monkeybat</a> and <a class="tweet-url username" href="http://twitter.com/bar" rel="nofollow">@bar</a> <a href="http://dryan.net/xxxxx?param=true#hash" rel="nofollow">http://dryan.net/xxxxx?param=t…</a> <a href="http://twitter.com/search?q=%23comedy" title="#comedy" class="tweet-url hashtag" rel="nofollow">#comedy</a> <a href="http://twitter.com/search?q=%23url" title="#url" class="tweet-url hashtag" rel="nofollow">#url</a>'
     correct_auto_link_usernames_or_lists = u'<a class="tweet-url username" href="http://twitter.com/foo" rel="nofollow">@foo</a> said the funniest thing to <a class="tweet-url username" href="http://twitter.com/monkeybat" rel="nofollow">＠monkeybat</a> and <a class="tweet-url username" href="http://twitter.com/bar" rel="nofollow">@bar</a> http://dryan.net/xxxxx?param=true#hash #comedy #url'
     correct_auto_link_hashtags = u'@foo said the funniest thing to ＠monkeybat and @bar http://dryan.net/xxxxx?param=true#hash <a href="http://twitter.com/search?q=%23comedy" title="#comedy" class="tweet-url hashtag" rel="nofollow">#comedy</a> <a href="http://twitter.com/search?q=%23url" title="#url" class="tweet-url hashtag" rel="nofollow">#url</a>'
     correct_auto_link_urls_custom = u'@foo said the funniest thing to ＠monkeybat and @bar <a href="http://dryan.net/xxxxx?param=true#hash" rel="nofollow">http://dryan.net/xxxxx?param=t…</a> #comedy #url'
@@ -18,12 +20,12 @@ def autolink_tests(tests, passed, failed):
 
     # test the overall auto_link method
     test_autolink = tt.autolink.auto_link()
-    if test_autolink == correct_auto_link:
+    if test_autolink == correct_auto_link_with_hit_highlight:
         print u'\033[92m  Attached auto_link passed\033[0m'
         passed += 1
     else:
         print u'\033[91m  Attached auto_link failed:\033[0m'
-        print u'    Expected: %s' % correct_auto_link
+        print u'    Expected: %s' % correct_auto_link_with_hit_highlight
         print u'    Returned: %s' % test_autolink
         failed +=1
     tests +=1
@@ -165,8 +167,8 @@ def extractor_tests(tests, passed, failed):
         passed += 1
     else:
         print u'\033[91m  Attached extract_mentioned_screen_names failed:\033[0m'
-        print u'    Expected: %s' % str(correct_mentioned_screen_names)
-        print u'    Returned: %s' % str(tt.extractor.extract_mentioned_screen_names())
+        print u'    Expected: %s' % force_unicode(correct_mentioned_screen_names)
+        print u'    Returned: %s' % force_unicode(tt.extractor.extract_mentioned_screen_names())
         failed +=1
     tests +=1
 
@@ -175,8 +177,8 @@ def extractor_tests(tests, passed, failed):
         passed += 1
     else:
         print u'\033[91m  Stand alone extract_mentioned_screen_names failed:\033[0m'
-        print u'    Expected: %s' % str(correct_mentioned_screen_names)
-        print u'    Returned: %s' % str(extractor.extract_mentioned_screen_names())
+        print u'    Expected: %s' % force_unicode(correct_mentioned_screen_names)
+        print u'    Returned: %s' % force_unicode(extractor.extract_mentioned_screen_names())
         failed +=1
     tests +=1
 
@@ -185,8 +187,8 @@ def extractor_tests(tests, passed, failed):
         passed += 1
     else:
         print u'\033[91m  Attached extract_mentioned_screen_names_with_indices failed:\033[0m'
-        print u'    Expected: %s' % str(correct_mentioned_screen_names_with_indices)
-        print u'    Returned: %s' % str(tt.extractor.extract_mentioned_screen_names_with_indices())
+        print u'    Expected: %s' % force_unicode(correct_mentioned_screen_names_with_indices)
+        print u'    Returned: %s' % force_unicode(tt.extractor.extract_mentioned_screen_names_with_indices())
         failed += 1
     tests += 1
 
@@ -195,8 +197,8 @@ def extractor_tests(tests, passed, failed):
         passed += 1
     else:
         print u'\033[91m  Stand alone extract_mentioned_screen_names_with_indices failed:\033[0m'
-        print u'    Expected: %s' % str(correct_mentioned_screen_names_with_indices)
-        print u'    Returned: %s' % str(extractor.extract_mentioned_screen_names_with_indices())
+        print u'    Expected: %s' % force_unicode(correct_mentioned_screen_names_with_indices)
+        print u'    Returned: %s' % force_unicode(extractor.extract_mentioned_screen_names_with_indices())
         failed += 1
     tests += 1
 
@@ -205,8 +207,8 @@ def extractor_tests(tests, passed, failed):
         passed += 1
     else:
         print u'\033[91m  Attached extract_reply_screen_name failed:\033[0m'
-        print u'    Expected: %s' % str(correct_reply_screen_name)
-        print u'    Returned: %s' % str(tt.extractor.extract_reply_screen_name())
+        print u'    Expected: %s' % force_unicode(correct_reply_screen_name)
+        print u'    Returned: %s' % force_unicode(tt.extractor.extract_reply_screen_name())
         failed +=1
     tests +=1
 
@@ -215,8 +217,8 @@ def extractor_tests(tests, passed, failed):
         passed += 1
     else:
         print u'\033[91m  Stand alone extract_reply_screen_name failed:\033[0m'
-        print u'    Expected: %s' % str(correct_reply_screen_name)
-        print u'    Returned: %s' % str(extractor.extract_reply_screen_name())
+        print u'    Expected: %s' % force_unicode(correct_reply_screen_name)
+        print u'    Returned: %s' % force_unicode(extractor.extract_reply_screen_name())
         failed +=1
     tests +=1
 
@@ -225,8 +227,8 @@ def extractor_tests(tests, passed, failed):
         passed += 1
     else:
         print u'\033[91m  Attached extract_urls failed:\033[0m'
-        print u'    Expected: %s' % str(correct_urls)
-        print u'    Returned: %s' % str(tt.extractor.extract_urls())
+        print u'    Expected: %s' % force_unicode(correct_urls)
+        print u'    Returned: %s' % force_unicode(tt.extractor.extract_urls())
         failed +=1
     tests +=1
 
@@ -235,8 +237,8 @@ def extractor_tests(tests, passed, failed):
         passed += 1
     else:
         print u'\033[91m  Stand alone extract_urls failed:\033[0m'
-        print u'    Expected: %s' % str(correct_urls)
-        print u'    Returned: %s' % str(extractor.extract_urls())
+        print u'    Expected: %s' % force_unicode(correct_urls)
+        print u'    Returned: %s' % force_unicode(extractor.extract_urls())
         failed +=1
     tests +=1
 
@@ -245,8 +247,8 @@ def extractor_tests(tests, passed, failed):
         passed += 1
     else:
         print u'\033[91m  Attached extract_urls_with_indices failed:\033[0m'
-        print u'    Expected: %s' % str(correct_urls_with_indices)
-        print u'    Returned: %s' % str(tt.extractor.extract_urls_with_indices())
+        print u'    Expected: %s' % force_unicode(correct_urls_with_indices)
+        print u'    Returned: %s' % force_unicode(tt.extractor.extract_urls_with_indices())
         failed += 1
     tests += 1
 
@@ -255,8 +257,8 @@ def extractor_tests(tests, passed, failed):
         passed += 1
     else:
         print u'\033[91m  Stand alone extract_urls_with_indices failed:\033[0m'
-        print u'    Expected: %s' % str(correct_urls_with_indices)
-        print u'    Returned: %s' % str(extractor.extract_urls_with_indices())
+        print u'    Expected: %s' % force_unicode(correct_urls_with_indices)
+        print u'    Returned: %s' % force_unicode(extractor.extract_urls_with_indices())
         failed += 1
     tests += 1
 
@@ -265,8 +267,8 @@ def extractor_tests(tests, passed, failed):
         passed += 1
     else:
         print u'\033[91m  Attached extract_hashtags failed:\033[0m'
-        print u'    Expected: %s' % str(correct_hashtags)
-        print u'    Returned: %s' % str(tt.extractor.extract_hashtags())
+        print u'    Expected: %s' % force_unicode(correct_hashtags)
+        print u'    Returned: %s' % force_unicode(tt.extractor.extract_hashtags())
         failed +=1
     tests +=1
 
@@ -275,8 +277,8 @@ def extractor_tests(tests, passed, failed):
         passed += 1
     else:
         print u'\033[91m  Stand alone extract_hashtags failed:\033[0m'
-        print u'    Expected: %s' % str(correct_hashtags)
-        print u'    Returned: %s' % str(extractor.extract_hashtags())
+        print u'    Expected: %s' % force_unicode(correct_hashtags)
+        print u'    Returned: %s' % force_unicode(extractor.extract_hashtags())
         failed +=1
     tests +=1
 
@@ -285,8 +287,8 @@ def extractor_tests(tests, passed, failed):
         passed += 1
     else:
         print u'\033[91m  Attached extract_hashtags_with_indices failed:\033[0m'
-        print u'    Expected: %s' % str(correct_hashtags_with_indices)
-        print u'    Returned: %s' % str(tt.extractor.extract_hashtags_with_indices())
+        print u'    Expected: %s' % force_unicode(correct_hashtags_with_indices)
+        print u'    Returned: %s' % force_unicode(tt.extractor.extract_hashtags_with_indices())
         failed += 1
     tests += 1
         
@@ -295,8 +297,39 @@ def extractor_tests(tests, passed, failed):
         passed += 1
     else:
         print u'\033[91m  Stand alone extract_hashtags_with_indices failed:\033[0m'
-        print u'    Expected: %s' % str(correct_hashtags_with_indices)
-        print u'    Returned: %s' % str(tt.extractor.extract_hashtags_with_indices())
+        print u'    Expected: %s' % force_unicode(correct_hashtags_with_indices)
+        print u'    Returned: %s' % force_unicode(extractor.extract_hashtags_with_indices())
+        failed += 1
+    tests += 1
+    
+    return tests, passed, failed
+    
+def highlighter_tests(tests, passed, failed):
+    print u'Running HitHighlighter tests'
+    
+    correct_hit_highlight = u'@foo said the <em class="search-hit">funniest</em> thing to ＠monkeybat and @bar http://dryan.net/xxxxx?param=true#hash #comedy #url'
+    
+    highlighter = twitter_text.HitHighlighter(text)
+
+    test_highlight = tt.highlighter.hit_highlight('funniest')
+    if test_highlight == correct_hit_highlight:
+        print u'\033[92m  Attached hit_highlight passed\033[0m'
+        passed += 1
+    else:
+        print u'\033[91m  Attached hit_highlight failed:\033[0m'
+        print u'    Expected: %s' % correct_hit_highlight
+        print u'    Returned: %s' % test_highlight
+        failed += 1
+    tests += 1
+        
+    test_highlight = highlighter.hit_highlight('funniest')
+    if test_highlight == correct_hit_highlight:
+        print u'\033[92m  Stand alone hit_highlight passed\033[0m'
+        passed += 1
+    else:
+        print u'\033[91m  Stand alone hit_highlight failed:\033[0m'
+        print u'    Expected: %s' % correct_hit_highlight
+        print u'    Returned: %s' % test_highlight
         failed += 1
     tests += 1
     
@@ -304,8 +337,26 @@ def extractor_tests(tests, passed, failed):
 
 def run_all():
     tests, passed, failed = 0, 0, 0
+
     tests, passed, failed = extractor_tests(tests, passed, failed)
+
+    print ''
+    tests, passed, failed = highlighter_tests(tests, passed, failed)
+
+    print ''
     tests, passed, failed = autolink_tests(tests, passed, failed)
+
+    print ''
+    print u'Checking hit_highlight assertion that text does not have HTML tags already present'
+    try:
+        tt.highlighter.hit_highlight('funniest')
+        print u'\033[91m  hit_highlight HTML tag check failed\033[0m'
+        failed += 1
+    except AssertionError:
+        print u'\033[92m  hit_highlight HTML tag check passed\033[0m'
+        passed += 1
+    tests += 1
+
     results = u'%d tests run. \033[92m%d passed.\033[0m' % (tests, passed)
     if failed > 0:
         results = u'%s \033[91m%d failed.\033[0m' % (results, failed)
