@@ -5,8 +5,151 @@ import twitter_text
 text = '@foo said the funniest thing to ＠monkeybat and @bar http://dryan.net/xxxxx?param=true#hash #comedy #url'
 tt = twitter_text.TwitterText(text)
 
+def autolink_tests(tests, passed, failed):
+    print u'Running Autolink tests'
+
+    correct_auto_link = u'<a class="tweet-url username" href="http://twitter.com/foo" rel="nofollow">@foo</a> said the funniest thing to <a class="tweet-url username" href="http://twitter.com/monkeybat" rel="nofollow">＠monkeybat</a> and <a class="tweet-url username" href="http://twitter.com/bar" rel="nofollow">@bar</a> <a href="http://dryan.net/xxxxx?param=true#hash" rel="nofollow">http://dryan.net/xxxxx?param=t…</a> <a href="http://twitter.com/search?q=%23comedy" title="#comedy" class="tweet-url hashtag" rel="nofollow">#comedy</a> <a href="http://twitter.com/search?q=%23url" title="#url" class="tweet-url hashtag" rel="nofollow">#url</a>'
+    correct_auto_link_usernames_or_lists = u'<a class="tweet-url username" href="http://twitter.com/foo" rel="nofollow">@foo</a> said the funniest thing to <a class="tweet-url username" href="http://twitter.com/monkeybat" rel="nofollow">＠monkeybat</a> and <a class="tweet-url username" href="http://twitter.com/bar" rel="nofollow">@bar</a> http://dryan.net/xxxxx?param=true#hash #comedy #url'
+    correct_auto_link_hashtags = u'@foo said the funniest thing to ＠monkeybat and @bar http://dryan.net/xxxxx?param=true#hash <a href="http://twitter.com/search?q=%23comedy" title="#comedy" class="tweet-url hashtag" rel="nofollow">#comedy</a> <a href="http://twitter.com/search?q=%23url" title="#url" class="tweet-url hashtag" rel="nofollow">#url</a>'
+    correct_auto_link_urls_custom = u'@foo said the funniest thing to ＠monkeybat and @bar <a href="http://dryan.net/xxxxx?param=true#hash" rel="nofollow">http://dryan.net/xxxxx?param=t…</a> #comedy #url'
+    correct_auto_link_urls_custom_with_kwargs = u'@foo said the funniest thing to ＠monkeybat and @bar <a href="http://dryan.net/xxxxx?param=true#hash" class="boosh" rel="external nofollow" title="a link">http://dryan.net/xxxxx?param=t…</a> #comedy #url'
+
+    autolink = twitter_text.Autolink(text)
+
+    # test the overall auto_link method
+    test_autolink = tt.autolink.auto_link()
+    if test_autolink == correct_auto_link:
+        print u'\033[92m  Attached auto_link passed\033[0m'
+        passed += 1
+    else:
+        print u'\033[91m  Attached auto_link failed:\033[0m'
+        print u'    Expected: %s' % correct_auto_link
+        print u'    Returned: %s' % test_autolink
+        failed +=1
+    tests +=1
+
+    test_autolink = autolink.auto_link()
+    if test_autolink == correct_auto_link:
+        print u'\033[92m  Stand alone auto_link passed\033[0m'
+        passed += 1
+    else:
+        print u'\033[91m  Stand alone auto_link failed:\033[0m'
+        print u'    Expected: %s' % correct_auto_link
+        print u'    Returned: %s' % test_autolink
+        failed +=1
+    tests +=1
+    
+    if failed > 0: # we need to run the individual methods to determine what failed
+        # test the auto_link_usernames_or_lists method
+        this_tt = twitter_text.TwitterText(text)
+        autolink = twitter_text.Autolink(text)
+        
+        test_autolink = this_tt.autolink.auto_link_usernames_or_lists()
+        if test_autolink == correct_auto_link_usernames_or_lists:
+            print u'\033[92m  Attached auto_link_usernames_or_lists passed\033[0m'
+            passed += 1
+        else:
+            print u'\033[91m  Attached auto_link_usernames_or_lists failed:\033[0m'
+            print u'    Expected: %s' % correct_auto_link_usernames_or_lists
+            print u'    Returned: %s' % test_autolink
+            failed +=1
+        tests +=1
+
+        test_autolink = autolink.auto_link_usernames_or_lists()
+        if test_autolink == correct_auto_link_usernames_or_lists:
+            print u'\033[92m  Stand alone auto_link_usernames_or_lists passed\033[0m'
+            passed += 1
+        else:
+            print u'\033[91m  Stand alone auto_link_usernames_or_lists failed:\033[0m'
+            print u'    Expected: %s' % correct_auto_link_usernames_or_lists
+            print u'    Returned: %s' % test_autolink
+            failed +=1
+        tests +=1
+        
+        # test the auto_link_hashtags method
+        this_tt = twitter_text.TwitterText(text)
+        autolink = twitter_text.Autolink(text)
+        
+        test_autolink = this_tt.autolink.auto_link_hashtags()
+        if test_autolink == correct_auto_link_hashtags:
+            print u'\033[92m  Attached auto_link_hashtags passed\033[0m'
+            passed += 1
+        else:
+            print u'\033[91m  Attached auto_link_hashtags failed:\033[0m'
+            print u'    Expected: %s' % correct_auto_link_hashtags
+            print u'    Returned: %s' % test_autolink
+            failed +=1
+        tests +=1
+
+        test_autolink = autolink.auto_link_hashtags()
+        if test_autolink == correct_auto_link_hashtags:
+            print u'\033[92m  Stand alone auto_link_hashtags passed\033[0m'
+            passed += 1
+        else:
+            print u'\033[91m  Stand alone auto_link_hashtags failed:\033[0m'
+            print u'    Expected: %s' % correct_auto_link_hashtags
+            print u'    Returned: %s' % test_autolink
+            failed +=1
+        tests +=1
+
+        # test the auto_link_urls_custom
+        this_tt = twitter_text.TwitterText(text)
+        autolink = twitter_text.Autolink(text)
+        
+        test_autolink = this_tt.autolink.auto_link_urls_custom()
+        if test_autolink == correct_auto_link_urls_custom:
+            print u'\033[92m  Attached auto_link_urls_custom passed\033[0m'
+            passed += 1
+        else:
+            print u'\033[91m  Attached auto_link_urls_custom failed:\033[0m'
+            print u'    Expected: %s' % correct_auto_link_urls_custom
+            print u'    Returned: %s' % test_autolink
+            failed +=1
+        tests +=1
+
+        test_autolink = autolink.auto_link_urls_custom()
+        if test_autolink == correct_auto_link_urls_custom:
+            print u'\033[92m  Stand alone auto_link_urls_custom passed\033[0m'
+            passed += 1
+        else:
+            print u'\033[91m  Stand alone auto_link_urls_custom failed:\033[0m'
+            print u'    Expected: %s' % correct_auto_link_urls_custom
+            print u'    Returned: %s' % test_autolink
+            failed +=1
+        tests +=1
+        
+    # test the auto_link_urls_custom with some kwargs for HTML attrs
+    this_tt = twitter_text.TwitterText(text)
+    autolink = twitter_text.Autolink(text)
+    
+    test_autolink = this_tt.autolink.auto_link_urls_custom(rel = 'external', class_name = 'boosh', title = 'a link')
+    if test_autolink == correct_auto_link_urls_custom_with_kwargs:
+        print u'\033[92m  Attached auto_link_urls_custom with kwargs passed\033[0m'
+        passed += 1
+    else:
+        print u'\033[91m  Attached auto_link_urls_custom with kwargs failed:\033[0m'
+        print u'    Expected: %s' % correct_auto_link_urls_custom_with_kwargs
+        print u'    Returned: %s' % test_autolink
+        failed +=1
+    tests +=1
+
+    test_autolink = autolink.auto_link_urls_custom(rel = 'external', class_name = 'boosh', title = 'a link')
+    if test_autolink == correct_auto_link_urls_custom_with_kwargs:
+        print u'\033[92m  Stand alone auto_link_urls_custom with kwargs passed\033[0m'
+        passed += 1
+    else:
+        print u'\033[91m  Stand alone auto_link_urls_custom with kwargs failed:\033[0m'
+        print u'    Expected: %s' % correct_auto_link_urls_custom_with_kwargs
+        print u'    Returned: %s' % test_autolink
+        failed +=1
+    tests +=1
+
+
+    return tests, passed, failed
+
 def extractor_tests(tests, passed, failed):
     print u'Running Extractor tests'
+
     correct_mentioned_screen_names = [u'@foo', u'＠monkeybat', u'@bar']
     correct_mentioned_screen_names_with_indices = [{'indicies': (0, 4), 'screen_name': u'@foo'}, {'indicies': (32, 42), 'screen_name': u'＠monkeybat'}, {'indicies': (47, 51), 'screen_name': u'@bar'}]
     correct_reply_screen_name = '@foo'
@@ -162,6 +305,7 @@ def extractor_tests(tests, passed, failed):
 def run_all():
     tests, passed, failed = 0, 0, 0
     tests, passed, failed = extractor_tests(tests, passed, failed)
+    tests, passed, failed = autolink_tests(tests, passed, failed)
     results = u'%d tests run. \033[92m%d passed.\033[0m' % (tests, passed)
     if failed > 0:
         results = u'%s \033[91m%d failed.\033[0m' % (results, failed)
