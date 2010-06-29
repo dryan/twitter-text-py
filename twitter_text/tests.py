@@ -3,7 +3,7 @@
 import twitter_text
 from twitter_text.unicode import force_unicode
 
-text = '@foo said the funniest thing to ＠monkeybat and @bar http://dryan.net/xxxxx?param=true#hash #comedy #url'
+text = force_unicode('@foo said the funniest thing to ＠monkeybat and @bar http://dryan.net/xxxxx?param=true#hash #comedy #url')
 tt = twitter_text.TwitterText(text)
 
 def autolink_tests(tests, passed, failed):
@@ -334,10 +334,106 @@ def highlighter_tests(tests, passed, failed):
     tests += 1
     
     return tests, passed, failed
+    
+def validation_tests(tests, passed, failed):
+    print u'Running Validation tests'
+    
+    validation = twitter_text.Validation(text)
+    
+    if tt.validation.tweet_length() == len(text):
+        print u'\033[92m  Attached tweet_length passed\033[0m'
+        passed += 1
+    else:
+        print u'\033[91m  Attached tweet_length failed:\033[0m'
+        print u'    Expected: %d' % len(text)
+        print u'    Returned: %d' % tt.validation.tweet_length()
+        failed += 1
+    tests += 1
+
+    if validation.tweet_length() == len(text):
+        print u'\033[92m  Stand alone tweet_length passed\033[0m'
+        passed += 1
+    else:
+        print u'\033[91m  Stand alone tweet_length failed:\033[0m'
+        print u'    Expected: %d' % len(text)
+        print u'    Returned: %d' % validation.tweet_length()
+        failed += 1
+    tests += 1
+
+    if tt.validation.tweet_invalid() == (False, None):
+        print u'\033[92m  Attached tweet_invalid passed\033[0m'
+        passed += 1
+    else:
+        print u'\033[91m  Attached tweet_invalid failed:\033[0m'
+        print u'    Expected: %s' % 'False, None'
+        print u'    Returned: %s, %s' % tt.validation.tweet_invalid()
+        failed += 1
+    tests += 1
+
+    if validation.tweet_invalid() == (False, None):
+        print u'\033[92m  Stand alone tweet_invalid passed\033[0m'
+        passed += 1
+    else:
+        print u'\033[91m  Stand alone tweet_invalid failed:\033[0m'
+        print u'    Expected: %s' % 'False, None'
+        print u'    Returned: %s, %s' % validation.tweet_invalid()
+        failed += 1
+    tests += 1
+    
+    print ''
+    print u'Running Validation tests on bad text'
+    bad_tweets = {
+        'empty': u'',
+        'too_long': text + text,
+        'invalid_characters': text
+    }
+    
+    this_tt = twitter_text.TwitterText(bad_tweets['empty'])
+    if this_tt.validation.tweet_invalid() == (True, 'Empty text'):
+        print u'\033[92m  Empty Text tweet_invalid passed\033[0m'
+        passed += 1
+    else:
+        print u'\033[91m  Empty Text tweet_invalid failed:\033[0m'
+        print u'    Expected: %s' % 'True, Empty text'
+        print u'    Returned: %s, %s' % validation.tweet_invalid()
+        failed += 1
+    tests += 1
+        
+    this_tt = twitter_text.TwitterText(bad_tweets['too_long'])
+    if this_tt.validation.tweet_invalid() == (True, 'Too long'):
+        print u'\033[92m  Too Long tweet_invalid passed\033[0m'
+        passed += 1
+    else:
+        print u'\033[91m  Too Long tweet_invalid failed:\033[0m'
+        print u'    Expected: %s' % 'True, Too long'
+        print u'    Returned: %s, %s' % validation.tweet_invalid()
+        failed += 1
+    tests += 1
+    
+    missed_bad_characters = []
+    for bad_character in validation.INVALID_CHARACTERS:
+        this_text = force_unicode(bad_tweets['invalid_characters'] + bad_character)
+        this_tt = twitter_text.TwitterText(this_text)
+        if not this_tt.validation.tweet_invalid() == (True, 'Invalid characters'):
+            missed_bad_characters.append(bad_character)
+    if not len(missed_bad_characters):
+        print u'\033[92m  Invalid Characters tweet_invalid passed\033[0m'
+        passed += 1
+    else:
+        print u'\033[91m  Invalid Characters tweet_invalid failed:\033[0m'
+        print u'    Expected: %s' % '[]'
+        print u'    Returned: %s' % force_unicode(missed_bad_characters)
+        failed += 1
+    tests += 1
+    
+    return tests, passed, failed
 
 def run_all():
     tests, passed, failed = 0, 0, 0
 
+    tests, passed, failed = validation_tests(tests, passed, failed)
+
+    print ''
     tests, passed, failed = extractor_tests(tests, passed, failed)
 
     print ''
