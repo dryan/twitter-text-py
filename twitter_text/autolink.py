@@ -150,6 +150,7 @@ class Autolink(object):
             defaults = {
                 'rel': ' '.join( [ kwargs.get('rel', ''), 'nofollow' ] ).strip()
             }
+        kwargs.update(defaults)
 
         html_attrs = []
         for k, v in kwargs.items():
