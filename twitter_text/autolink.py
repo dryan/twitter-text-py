@@ -154,7 +154,9 @@ class Autolink(object):
 
         html_attrs = []
         for k, v in kwargs.items():
-            html_attrs = u'%s="%s"' % ( str(k), str(v) )
+            if str(k) == 'class_name': # handle this special case
+                k = 'class'
+            html_attrs.append( u'%s="%s"' % ( str(k), str(v) ) )
         html_attrs = ' '.join(html_attrs)
         if len(html_attrs):
             html_attrs = ' ' + html_attrs
