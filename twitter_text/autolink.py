@@ -148,7 +148,7 @@ class Autolink(object):
             del(kwargs['suppress_no_follow'])
         else:
             defaults = {
-                'rel': ' '.join( [ kwargs.get('rel', ''), 'nofollow' ] )
+                'rel': ' '.join( [ kwargs.get('rel', ''), 'nofollow' ] ).strip()
             }
 
         html_attrs = []
