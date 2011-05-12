@@ -1,0 +1,3 @@
+include LICENSE
+include *.textile
+recursive-include twitter_text *.py
