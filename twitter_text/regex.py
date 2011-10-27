@@ -38,7 +38,7 @@ REGEXEN['auto_link_emoticon'] = re.compile(ur'(8\-\#|8\-E|\+\-\(|\`\@|\`O|\&lt;\
 REGEXEN['valid_preceding_chars'] = re.compile(ur"(?:[^\/\"':!=]|^|\:)")
 punct = re.escape(string.punctuation)
 REGEXEN['valid_domain'] = re.compile(ur'(?:[^%s\s][\.-](?=[^%s\s])|[^%s\s]){1,}\.[a-z]{2,}(?::[0-9]+)?' % (punct, punct, punct), re.IGNORECASE)
-REGEXEN['valid_url_path_chars'] = re.compile(ur'[\.\,]?[a-z0-9!\*\'\(\);:=\+\$\/%#\[\]\-_,~@]', re.IGNORECASE)
+REGEXEN['valid_url_path_chars'] = re.compile(ur'[\.\,]?[a-z0-9!\*\'\(\);:=\+\$\/%#\[\]\-_,~@\.]', re.IGNORECASE)
 # Valid end-of-path chracters (so /foo. does not gobble the period).
 #   1. Allow ) for Wikipedia URLs.
 #   2. Allow =&# for empty URL parameters and other URL-join artifacts
