@@ -1,4 +1,4 @@
-from setuptools import setup
+from setuptools import setup, find_packages
  
 setup(
     name='twitter-text-py',
@@ -7,7 +7,7 @@ setup(
     author='Daniel Ryan',
     author_email='dryan@dryan.com',
     url='http://github.com/dryan/twitter-text-py',
-    packages=['twitter_text'],
+    packages=find_packages(),
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
