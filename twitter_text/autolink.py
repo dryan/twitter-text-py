@@ -71,7 +71,7 @@ class Autolink(object):
             'list_url_base': 'http://twitter.com/',
         }
         kwargs.update(defaults)
-        extra_html = kwargs.get('suppress_no_follow', False) or self.HTML_ATTR_NO_FOLLOW
+        extra_html = '' if kwargs.get('suppress_no_follow', False) else self.HTML_ATTR_NO_FOLLOW
     
         matches = REGEXEN['auto_link_usernames_or_lists'].finditer(self.text)
         for match in matches:
@@ -117,7 +117,7 @@ class Autolink(object):
             'hashtag_url_base': 'http://twitter.com/search?q=%23',
         }
         kwargs.update(defaults)
-        extra_html = kwargs.get('suppress_no_follow', False) or self.HTML_ATTR_NO_FOLLOW
+        extra_html = '' if kwargs.get('suppress_no_follow', False) else self.HTML_ATTR_NO_FOLLOW
     
         matches = REGEXEN['auto_link_hashtags'].finditer(self.text)
         for match in matches:
