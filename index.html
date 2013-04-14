@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8' />
+    <meta http-equiv="X-UA-Compatible" content="chrome=1" />
+    <meta name="description" content="Twitter-text-py : a python port of http://github.com/mzsanford/twitter-text-rb/  also available via `easy_install twitter_text`" />
+
+    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+
+    <title>Twitter-text-py</title>
+  </head>
+
+  <body>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+          <a id="forkme_banner" href="https://github.com/dryan/twitter-text-py">View on GitHub</a>
+
+          <h1 id="project_title">Twitter-text-py</h1>
+          <h2 id="project_tagline">a python port of http://github.com/mzsanford/twitter-text-rb/  also available via `easy_install twitter_text`</h2>
+
+            <section id="downloads">
+              <a class="zip_download_link" href="https://github.com/dryan/twitter-text-py/zipball/master">Download this project as a .zip file</a>
+              <a class="tar_download_link" href="https://github.com/dryan/twitter-text-py/tarball/master">Download this project as a tar.gz file</a>
+            </section>
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+        <p>A port of the Ruby gem <a href="http://github.com/mzsanford/twitter-text-rb">twitter-text-rb</a> to Python.</p>
+
+<h1>Usage</h1>
+
+<p>You can either call a new TwitterText object with the text of the tweet you want to process <code>TwitterText('twitter-text-py is #awesome')</code> or use any of the submodule objects directly (Autolink, Extractor, HitHighlighter or Validation), passing in the tweet text as an argument.</p>
+
+<p>The library also contains a Django template filter that applies the auto_link method to the passed in text. It can also optionally apply the hit_highlight method. Example:</p>
+
+<pre><code>{% load twitterize %}
+
+{{ obj.body|twitter_text }} &lt;!-- just add the links --&gt;
+{{ obj.body|twitter_text:"my term" }} &lt;!-- add the links and highlight the search term --&gt;
+</code></pre>
+
+<p>You can test that the library is working correctly by running <code>python tests.py</code> inside the <code>twitter_text</code> directory.</p>
+
+<h2>TwitterText(text)</h2>
+
+<h3>Properties:</h3>
+
+<ul>
+<li>text:             the original text you passed in, or the modified version if you've called any functions on the object.</li>
+<li>original_text:    the original text you passed in; never modified. Useful for a fallback or to do comparisons.</li>
+<li>has_been_linked:  boolean denoting if any of the Autolink functions have been called. (Mostly for internal use.)</li>
+<li>tweet_length:     the value returned by <code>validation.tweet_length</code> or None if that function has not yet been called.</li>
+<li>tweet_is_valid:   boolean returned by <code>validation.tweet_invalid</code> or None if that function has not yet been called.</li>
+<li>validation_error: the validation error string returned by <code>validation.tweet_invalid</code> or None if that function has not yet been called.</li>
+<li>autolink:         property pointing to an Autolink object initialized with <code>text</code>
+</li>
+<li>extractor:        property pointing to an Extractor object initialized with <code>text</code>
+</li>
+<li>highlighter:      property pointing to a HitHighlighter object initialized with <code>text</code>
+</li>
+<li>validation:       property pointing to a Validation object initialized with <code>text</code>
+</li>
+</ul><h2>Autolink(text)</h2>
+
+<p>This object modifies the text passed to it (and the parent TwitterText.text if present).</p>
+
+<h3>Defaults</h3>
+
+<p>These may be overridden by kwargs on a particular method.</p>
+
+<ul>
+<li>url_class         =   'tweet-url'</li>
+<li>list_class        =   'list-slug'</li>
+<li>username_class    =   'username'</li>
+<li>hashtag_class     =   'hashtag'</li>
+</ul><h3>Methods:</h3>
+
+<p><strong>auto_link(self, **kwargs)</strong></p>
+
+<p>Add <code>&lt;a&gt;&lt;/a&gt;</code> tags around the usernames, lists, hashtags and URLs in the provided text. The <code>&lt;a&gt;</code> tags can be controlled with the following kwargs:</p>
+
+<ul>
+<li>url_class:            class to add to all <code>&lt;a&gt;</code> tags</li>
+<li>list_class:           class to add to list <code>&lt;a&gt;</code> tags</li>
+<li>username_class:       class to add to username <code>&lt;a&gt;</code> tags</li>
+<li>hashtag_class:        class to add to hashtag <code>&lt;a&gt;</code> tags</li>
+<li>username_url_base:    the value for href attribute on username links. The <a href="https://github.com/username" class="user-mention">@username</a> (minus the @) will be appended at the end of this.</li>
+<li>list_url_base:        the value for href attribute on list links. The @username/list (minus the @) will be appended at the end of this.</li>
+<li>hashtag_url_base:     the value for href attribute on hashtag links. The #hashtag (minus the #) will be appended at the end of this.</li>
+<li>suppress_lists:       disable auto-linking to lists</li>
+<li>suppress_no_follow:   do not add rel="nofollow" to auto-linked items</li>
+<li>html_attrs:           a dictionary of HTML attributes to add to non-Twitter links</li>
+</ul><p><strong>auto_link_usernames_or_lists(self, **kwargs)</strong></p>
+
+<p>Add <code>&lt;a&gt;&lt;/a&gt;</code> tags around the usernames and lists in the provided text. The <code>&lt;a&gt;</code> tags can be controlled with the following kwargs:</p>
+
+<ul>
+<li>url_class:            class to add to all <code>&lt;a&gt;</code> tags</li>
+<li>list_class:           class to add to list <code>&lt;a&gt;</code> tags</li>
+<li>username_class:       class to add to username <code>&lt;a&gt;</code> tags</li>
+<li>username_url_base:    the value for href attribute on username links. The <a href="https://github.com/username" class="user-mention">@username</a> (minus the @) will be appended at the end of this.</li>
+<li>list_url_base:        the value for href attribute on list links. The @username/list (minus the @) will be appended at the end of this.</li>
+<li>suppress_lists:       disable auto-linking to lists</li>
+<li>suppress_no_follow:   do not add rel="nofollow" to auto-linked items</li>
+</ul><p><strong>auto_link_hashtags(self, **kwargs)</strong></p>
+
+<p>Add <code>&lt;a&gt;&lt;/a&gt;</code> tags around the hashtags in the provided text. The <code>&lt;a&gt;</code> tags can be controlled with the following kwargs:</p>
+
+<ul>
+<li>url_class:            class to add to all <code>&lt;a&gt;</code> tags</li>
+<li>hashtag_class:        class to add to hashtag <code>&lt;a&gt;</code> tags</li>
+<li>hashtag_url_base:     the value for href attribute. The hashtag text (minus the #) will be appended at the end of this.</li>
+<li>suppress_no_follow:   do not add rel="nofollow" to auto-linked items</li>
+</ul><p><strong>auto_link_urls_custom(self, **kwargs)</strong></p>
+
+<p>Add <code>&lt;a&gt;&lt;/a&gt;</code> tags around the URLs in the provided text. Any elements in kwargs (except @supress_no_follow@) will be converted to HTML attributes and place in the <code>&lt;a&gt;</code> tag. Unless kwargs contains @suppress_no_follow@ the rel="nofollow" attribute will be added.</p>
+
+<h2>Extractor</h2>
+
+<p>This object does not modify the text passed to it (or the parent TwitterText.text if present).</p>
+
+<h3>Methods</h3>
+
+<p><strong>extract_mentioned_screen_names</strong></p>
+
+<p>Extracts a list of all usernames mentioned in the Tweet text. If the text contains no username mentions an empty list will be returned.</p>
+
+<p>If a transform is given, then it will be called with each username.</p>
+
+<p><strong>extract_mentioned_screen_names_with_indices</strong></p>
+
+<p>Extracts a list of all usernames mentioned in the Tweet text along with the indices for where the mention occurred in the format:</p>
+
+<pre><code>{
+    'username': username_string,
+    'indicies': ( start_postion, end_position )
+}
+</code></pre>
+
+<p>If the text contains no username mentions, an empty list will be returned.</p>
+
+<p>If a transform is given, then it will be called with each username, the start index, and the end index in the text.</p>
+
+<p><strong>extract_reply_screen_name</strong></p>
+
+<p>Extracts the first username replied to in the Tweet text. If the text does not contain a reply None will be returned.</p>
+
+<p>If a transform is given then it will be called with the username replied to (if any).</p>
+
+<p><strong>extract_urls</strong></p>
+
+<p>Extracts a list of all URLs included in the Tweet text. If the text contains no URLs an empty list will be returned.</p>
+
+<p>If a transform is given then it will be called for each URL.</p>
+
+<p><strong>extract_urls_with_indices</strong></p>
+
+<p>Extracts a list of all URLs included in the Tweet text along with the indices in the format:</p>
+
+<pre><code>{
+    'url': url_string,
+    'indices': ( start_postion, end_position )
+}
+</code></pre>
+
+<p>If the text contains no URLs an empty list will be returned.</p>
+
+<p>If a transform is given then it will be called for each URL, the start index, and the end index in the text.</p>
+
+<p><strong>extract_hashtags</strong></p>
+
+<p>Extracts a list of all hashtags included in the Tweet text. If the text contains no hashtags an empty list will be returned. The list returned will not include the leading # character.</p>
+
+<p>If a transform is given then it will be called for each hashtag.</p>
+
+<p><strong>extract_hashtags_with_indices</strong></p>
+
+<p>Extracts a list of all hashtags included in the Tweet text along with the indices in the format:</p>
+
+<pre><code>{
+    'hashtag': hashtag_text,
+    'indices': ( start_postion, end_position )
+}
+</code></pre>
+
+<p>If the text contains no hashtags an empty list will be returned. The list returned will not include the leading # character.</p>
+
+<p>If a transform is given then it will be called for each hashtag.</p>
+
+<h2>HitHighlighter</h2>
+
+<h3>Defaults</h3>
+
+<p>These may be overridden by kwargs on a particular method.</p>
+
+<ul>
+<li>highlight_tag = 'em'</li>
+<li>highlight_class = 'search-hit'</li>
+</ul><h3>Methods</h3>
+
+<p><strong>hit_highlight(self, query, **kwargs)</strong></p>
+
+<p>Add <code>&lt;em&gt;&lt;/em&gt;</code> tags around occurrences of query provided in the text except for occurrences inside hashtags.</p>
+
+<p>The <code>&lt;em&gt;&lt;/em&gt;</code> tags or css class can be overridden using the highlight_tag and/or highlight_class kwarg. For example:</p>
+
+<pre><code>python&gt; HitHighlighter.hit_highlight('test hit here').hit_highlight('hit', highlight_tag = 'strong', highlight_class = 'search-term')
+        =\&gt; "test &lt;strong class='search-term'&gt;hit&lt;/strong&gt; here"
+</code></pre>
+
+<h2>Validation</h2>
+
+<h3>Methods</h3>
+
+<p><strong>tweet_length</strong></p>
+
+<p>Returns the length of the string as it would be displayed. This is equivilent to the length of the Unicode NFC (See: <a href="http://www.unicode.org/reports/tr15">http://www.unicode.org/reports/tr15</a>). This is needed in order to consistently calculate the length of a string no matter which actual form was transmitted. For example:</p>
+
+<pre><code>U+0065 Latin Small Letter E
++ U+0301 Combining Acute Accent
+----------
+= 2 bytes, 2 characters, displayed as é (1 visual glyph)
+</code></pre>
+
+<p>The NFC of {U+0065, U+0301} is {U+00E9}, which is a single character and a display length of 1</p>
+
+<p>The string could also contain U+00E9 already, in which case the canonicalization will not change the value.</p>
+
+<p><strong>tweet_invalid</strong></p>
+
+<p>Check the text for any reason that it may not be valid as a Tweet. This is meant as a pre-validation before posting to api.twitter.com. There are several server-side reasons for Tweets to fail but this pre-validation will allow quicker feedback.</p>
+
+<p>Returns false if this text is valid. Otherwise one of the following Symbols will be returned:</p>
+
+<ul>
+<li>"Too long": if the text is too long</li>
+<li>"Empty text": if the text is empty</li>
+<li>"Invalid characters": if the text contains non-Unicode or any of the disallowed Unicode characters</li>
+</ul>
+      </section>
+    </div>
+
+    <!-- FOOTER  -->
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Twitter-text-py maintained by <a href="https://github.com/dryan">dryan</a></p>
+        <p>Published with <a href="http://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+
+              <script type="text/javascript">
+            var gaJsHost = (("https:" == document.location.protocol) ? "https://ssl." : "http://www.");
+            document.write(unescape("%3Cscript src='" + gaJsHost + "google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E"));
+          </script>
+          <script type="text/javascript">
+            try {
+              var pageTracker = _gat._getTracker("UA-3625251-4");
+            pageTracker._trackPageview();
+            } catch(err) {}
+          </script>
+
+
+  </body>
+</html>
