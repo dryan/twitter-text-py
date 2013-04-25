@@ -70,7 +70,9 @@ class Autolink(object):
             'username_url_base': 'http://twitter.com/',
             'list_url_base': 'http://twitter.com/',
         }
-        kwargs.update(defaults)
+        for key, val in defaults.items():
+            if not key in kwargs:
+                kwargs[key] =   val
         extra_html = '' if kwargs.get('suppress_no_follow', False) else self.HTML_ATTR_NO_FOLLOW
     
         matches = REGEXEN['auto_link_usernames_or_lists'].finditer(self.text)
@@ -116,7 +118,9 @@ class Autolink(object):
             'hashtag_class': self.DEFAULT_HASHTAG_CLASS,
             'hashtag_url_base': 'http://twitter.com/search?q=%23',
         }
-        kwargs.update(defaults)
+        for key, val in defaults.items():
+            if not key in kwargs:
+                kwargs[key] =   val
         extra_html = '' if kwargs.get('suppress_no_follow', False) else self.HTML_ATTR_NO_FOLLOW
     
         matches = REGEXEN['auto_link_hashtags'].finditer(self.text)
@@ -150,7 +154,9 @@ class Autolink(object):
             defaults = {
                 'rel': ' '.join( [ kwargs.get('rel', ''), 'nofollow' ] ).strip()
             }
-        kwargs.update(defaults)
+        for key, val in defaults.items():
+            if not key in kwargs:
+                kwargs[key] =   val
 
         html_attrs = []
         for k, v in kwargs.items():

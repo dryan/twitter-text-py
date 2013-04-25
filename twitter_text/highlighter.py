@@ -28,7 +28,9 @@ class HitHighlighter(object):
             'highlight_tag': kwargs.get('highlight_tag', self.DEFAULT_HIGHLIGHT_TAG).lower(),
             'highlight_class': kwargs.get('highlight_class', self.DEFAULT_HIGHLIGHT_CLASS).lower(),
         }
-        kwargs.update(defaults)
+        for key, val in defaults.items():
+            if not key in kwargs:
+                kwargs[key] =   val
         del(defaults)
         
         tags = ( u'<%s class="%s">' % ( kwargs.get('highlight_tag'), kwargs.get('highlight_class') ), u'</%s>' % kwargs.get('highlight_tag') )
