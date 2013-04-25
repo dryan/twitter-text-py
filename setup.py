@@ -9,7 +9,7 @@ setup(
     url='http://github.com/dryan/twitter-text-py',
     packages=find_packages(),
     classifiers=[
-        'Development Status :: 5 - Beta',
+        'Development Status :: 4 - Beta',
         'Environment :: Web Environment',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
