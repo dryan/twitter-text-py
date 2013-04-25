@@ -14,7 +14,7 @@ def autolink_tests(tests, passed, failed):
     correct_auto_link_usernames_or_lists = u'<a class="tweet-url username" href="http://twitter.com/foo" rel="nofollow">@foo</a> said the funniest thing to <a class="tweet-url username" href="http://twitter.com/monkeybat" rel="nofollow">＠monkeybat</a> and <a class="tweet-url username" href="http://twitter.com/bar" rel="nofollow">@bar</a> http://dryan.net/xxxxx?param=true#hash #comedy #url'
     correct_auto_link_hashtags = u'@foo said the funniest thing to ＠monkeybat and @bar http://dryan.net/xxxxx?param=true#hash <a href="http://twitter.com/search?q=%23comedy" title="#comedy" class="tweet-url hashtag" rel="nofollow">#comedy</a> <a href="http://twitter.com/search?q=%23url" title="#url" class="tweet-url hashtag" rel="nofollow">#url</a>'
     correct_auto_link_urls_custom = u'@foo said the funniest thing to ＠monkeybat and @bar <a href="http://dryan.net/xxxxx?param=true#hash" rel="nofollow">http://dryan.net/xxxxx?param=t…</a> #comedy #url'
-    correct_auto_link_urls_custom_with_kwargs = u'@foo said the funniest thing to ＠monkeybat and @bar <a href="http://dryan.net/xxxxx?param=true#hash" class="boosh" rel="external nofollow" title="a link">http://dryan.net/xxxxx?param=t…</a> #comedy #url'
+    correct_auto_link_urls_custom_with_kwargs = u'@foo said the funniest thing to ＠monkeybat and @bar <a href="http://dryan.net/xxxxx?param=true#hash" class="boosh" rel="external" title="a link">http://dryan.net/xxxxx?param=t…</a> #comedy #url'
 
     autolink = twitter_text.Autolink(text)
 
@@ -153,7 +153,7 @@ def extractor_tests(tests, passed, failed):
     print u'Running Extractor tests'
 
     correct_mentioned_screen_names = [u'foo', u'monkeybat', u'bar']
-    correct_mentioned_screen_names_with_indices = [{'indicies': (0, 4), 'screen_name': u'foo'}, {'indicies': (32, 42), 'screen_name': u'monkeybat'}, {'indicies': (47, 51), 'screen_name': u'bar'}]
+    correct_mentioned_screen_names_with_indices = [{'indices': (0, 4), 'screen_name': u'foo'}, {'indices': (32, 42), 'screen_name': u'monkeybat'}, {'indices': (47, 51), 'screen_name': u'bar'}]
     correct_reply_screen_name = 'foo'
     correct_urls = [u'http://dryan.net/xxxxx?param=true#hash']
     correct_urls_with_indices = [{'url': u'http://dryan.net/xxxxx?param=true#hash', 'indices': (52, 90)}]
