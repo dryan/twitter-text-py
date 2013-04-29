@@ -1,4 +1,4 @@
-A port of the Ruby gem [twitter-text-rb](http://github.com/mzsanford/twitter-text-rb) to Python.
+A port of the Ruby gem [twitter-text-rb](https://github.com/twitter/twitter-text-rb) to Python.
 
 # Usage
 
