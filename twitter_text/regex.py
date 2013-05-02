@@ -156,12 +156,13 @@ HASHTAG_BOUNDARY = ur'\A|\z|[^&a-z0-9_%s]' % (LATIN_ACCENTS + NON_LATIN_HASHTAG_
 
 HASHTAG = re.compile(ur'(%s)(#|＃)(%s*%s%s*)' % (HASHTAG_BOUNDARY, HASHTAG_ALPHANUMERIC, HASHTAG_ALPHA, HASHTAG_ALPHANUMERIC), re.IGNORECASE)
 
+REGEXEN['valid_hashtag'] = HASHTAG
+REGEXEN['end_hashtag_match'] = ur'\A(?:[#＃]|:\/\/)'
+
 REGEXEN['at_signs'] = re.compile(ur'[%s]' % ur'|'.join(list(u'@＠')))
 REGEXEN['extract_mentions'] = re.compile(ur'(^|[^a-zA-Z0-9_])(%s)([a-zA-Z0-9_]{1,20})(?=(.|$))' % REGEXEN['at_signs'].pattern)
 REGEXEN['extract_reply'] = re.compile(ur'^(?:[%s])*%s([a-zA-Z0-9_]{1,20})' % (REGEXEN['spaces'].pattern, REGEXEN['at_signs'].pattern))
 
-# Characters considered valid in a hashtag but not at the beginning, where only a-z and 0-9 are valid.
-REGEXEN['auto_link_hashtags'] = HASHTAG
 REGEXEN['auto_link_usernames_or_lists'] = re.compile(ur'([^a-zA-Z0-9_]|^)([@＠]+)([a-zA-Z0-9_]{1,20})(\/[a-zA-Z][a-zA-Z0-9\u0080-\u00ff\-]{0,79})?')
 REGEXEN['auto_link_emoticon'] = re.compile(ur'(8\-\#|8\-E|\+\-\(|\`\@|\`O|\&lt;\|:~\(|\}:o\{|:\-\[|\&gt;o\&lt;|X\-\/|\[:-\]\-I\-|\/\/\/\/Ö\\\\\\\\|\(\|:\|\/\)|∑:\*\)|\( \| \))')
 

@@ -145,7 +145,7 @@ class Extractor(object):
         If a transform is given then it will be called for each hashtag.
         """
         tags = []
-        matches = REGEXEN['auto_link_hashtags'].finditer(self.text)
+        matches = REGEXEN['valid_hashtag'].finditer(self.text)
         for match in matches:
             start = match.start() + len(match.group(1))
             end = start + len(match.group(2)) + len(match.group(3))

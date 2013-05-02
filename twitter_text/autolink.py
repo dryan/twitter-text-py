@@ -123,7 +123,7 @@ class Autolink(object):
                 kwargs[key] =   val
         extra_html = '' if kwargs.get('suppress_no_follow', False) else self.HTML_ATTR_NO_FOLLOW
     
-        matches = REGEXEN['auto_link_hashtags'].finditer(self.text)
+        matches = REGEXEN['valid_hashtag'].finditer(self.text)
         for match in matches:
             _link = u'%s<a href="%s%s" title="#%s" class="%s"%s>%s%s</a>' % ( match.group(1), kwargs.get('hashtag_url_base'), match.group(3), match.group(3), ' '.join( [ kwargs.get('url_class', ''), kwargs.get('hashtag_class', '') ] ), extra_html, match.group(2), match.group(3) )
             self.text = self.text.replace(match.group(0), _link)
