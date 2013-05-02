@@ -8,6 +8,12 @@ import re, string
 
 REGEXEN = {} # :nodoc:
 
+def regex_range(start, end = None):
+    if end:
+        return u'%s-%s' % (unichr(start), unichr(end))
+    else:
+        return u'%s' % unichr(start)
+
 # Space is more than %20, U+3000 for example is the full-width space used with Kanji. Provide a short-hand
 # to access both the list of characters and a pattern suitible for use with String#split
 #  Taken from: ActiveSupport::Multibyte::Handlers::UTF8Handler::UNICODE_WHITESPACE
