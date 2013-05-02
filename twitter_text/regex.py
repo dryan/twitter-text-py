@@ -28,7 +28,7 @@ REGEXEN['at_signs'] = re.compile(ur'[%s]' % ur'|'.join(list(u'@＠')))
 REGEXEN['extract_mentions'] = re.compile(ur'(^|[^a-zA-Z0-9_])(%s)([a-zA-Z0-9_]{1,20})(?=(.|$))' % REGEXEN['at_signs'].pattern)
 REGEXEN['extract_reply'] = re.compile(ur'^(?:[%s])*%s([a-zA-Z0-9_]{1,20})' % (REGEXEN['spaces'].pattern, REGEXEN['at_signs'].pattern))
 
-REGEXEN['list_name'] = re.compile(ur'^[a-zA-Z\u0080-\u00ff].{0,79}$')
+REGEXEN['list_name'] = re.compile(ur'^[a-zA-Z][a-zA-Z0-9_\-\u0080-\u00ff]{0,24}$')
 
 # Latin accented characters (subtracted 0xD7 from the range, it's a confusable multiplication sign. Looks like "x")
 LATIN_ACCENTS = []
