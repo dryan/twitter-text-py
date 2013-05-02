@@ -43,17 +43,35 @@ INVALID_CHARACTERS  =   [
 ]
 REGEXEN['invalid_control_characters']   =   [unichr(x) for x in INVALID_CHARACTERS]
 
+REGEXEN['list_name'] = re.compile(ur'^[a-zA-Z][a-zA-Z0-9_\-\u0080-\u00ff]{0,24}$')
+
+# Latin accented characters
+# Excludes 0xd7 from the range (the multiplication sign, confusable with "x").
+# Also excludes 0xf7, the division sign
+LATIN_ACCENTS = [
+    regex_range(0xc0, 0xd6),
+    regex_range(0xd8, 0xf6),
+    regex_range(0xf8, 0xff),
+    regex_range(0x0100, 0x024f),
+    regex_range(0x0253, 0x0254),
+    regex_range(0x0256, 0x0257),
+    regex_range(0x0259),
+    regex_range(0x025b),
+    regex_range(0x0263),
+    regex_range(0x0268),
+    regex_range(0x026f),
+    regex_range(0x0272),
+    regex_range(0x0289),
+    regex_range(0x028b),
+    regex_range(0x02bb),
+    regex_range(0x0300, 0x036f),
+    regex_range(0x1e00, 0x1eff)
+]
+REGEXEN['latin_accents'] = re.compile(ur''.join(LATIN_ACCENTS))
+
 REGEXEN['at_signs'] = re.compile(ur'[%s]' % ur'|'.join(list(u'@＠')))
 REGEXEN['extract_mentions'] = re.compile(ur'(^|[^a-zA-Z0-9_])(%s)([a-zA-Z0-9_]{1,20})(?=(.|$))' % REGEXEN['at_signs'].pattern)
 REGEXEN['extract_reply'] = re.compile(ur'^(?:[%s])*%s([a-zA-Z0-9_]{1,20})' % (REGEXEN['spaces'].pattern, REGEXEN['at_signs'].pattern))
-
-REGEXEN['list_name'] = re.compile(ur'^[a-zA-Z][a-zA-Z0-9_\-\u0080-\u00ff]{0,24}$')
-
-# Latin accented characters (subtracted 0xD7 from the range, it's a confusable multiplication sign. Looks like "x")
-LATIN_ACCENTS = []
-for accent in [192, 193, 194, 195, 196, 197, 198, 199, 200, 201, 202, 203, 204, 205, 206, 207, 208, 209, 210, 211, 212, 213, 214, 216, 217, 218, 219, 220, 221, 222, 223, 224, 225, 226, 227, 228, 229, 230, 231, 232, 233, 234, 235, 236, 237, 238, 239, 240, 241, 242, 243, 244, 245, 246, 248, 249, 250, 251, 252, 253, 254, 255]:
-    LATIN_ACCENTS.append(hex(accent))
-REGEXEN['latin_accents'] = re.compile(ur''.join(LATIN_ACCENTS))
 
 # Characters considered valid in a hashtag but not at the beginning, where only a-z and 0-9 are valid.
 HASHTAG_CHARACTERS = re.compile(ur'[a-z0-9_%s]' % REGEXEN['latin_accents'].pattern, re.IGNORECASE) 
