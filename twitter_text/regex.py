@@ -12,9 +12,22 @@ REGEXEN = {} # :nodoc:
 # to access both the list of characters and a pattern suitible for use with String#split
 #  Taken from: ActiveSupport::Multibyte::Handlers::UTF8Handler::UNICODE_WHITESPACE
 UNICODE_SPACES = []
-for space in [9, 10, 11, 12, 13, 32, 133, 160, 5760, 6158, 8192, 8193, 8194, 8195, 8196, 8197, 8198, 8199, 8200, 8201, 8202, 8232, 8233, 8239, 8287, 12288]:
-    UNICODE_SPACES.append(hex(space))
-REGEXEN['spaces'] = re.compile(ur'|'.join(UNICODE_SPACES))
+for space in reduce(lambda x,y: x + y if type(y) == list else x + [y], [
+        range(0x0009, 0x000D),  # White_Space # Cc   [5] <control-0009>..<control-000D>
+        0x0020,                 # White_Space # Zs       SPACE
+        0x0085,                 # White_Space # Cc       <control-0085>
+        0x00A0,                 # White_Space # Zs       NO-BREAK SPACE
+        0x1680,                 # White_Space # Zs       OGHAM SPACE MARK
+        0x180E,                 # White_Space # Zs       MONGOLIAN VOWEL SEPARATOR
+        range(0x2000, 0x200A),  # White_Space # Zs  [11] EN QUAD..HAIR SPACE
+        0x2028,                 # White_Space # Zl       LINE SEPARATOR
+        0x2029,                 # White_Space # Zp       PARAGRAPH SEPARATOR
+        0x202F,                 # White_Space # Zs       NARROW NO-BREAK SPACE
+        0x205F,                 # White_Space # Zs       MEDIUM MATHEMATICAL SPACE
+        0x3000,                 # White_Space # Zs       IDEOGRAPHIC SPACE
+    ]):
+    UNICODE_SPACES.append(unichr(space))
+REGEXEN['spaces'] = re.compile(ur''.join(UNICODE_SPACES))
 
 # Characters not allowed in Tweets
 INVALID_CHARACTERS  =   [
