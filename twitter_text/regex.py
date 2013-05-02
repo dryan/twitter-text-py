@@ -69,6 +69,13 @@ LATIN_ACCENTS = [
 ]
 REGEXEN['latin_accents'] = re.compile(ur''.join(LATIN_ACCENTS))
 
+RTL_CHARACTERS = ''.join([
+    regex_range(0x0600,0x06FF),
+    regex_range(0x0750,0x077F),
+    regex_range(0x0590,0x05FF),
+    regex_range(0xFE70,0xFEFF)
+])
+
 REGEXEN['at_signs'] = re.compile(ur'[%s]' % ur'|'.join(list(u'@＠')))
 REGEXEN['extract_mentions'] = re.compile(ur'(^|[^a-zA-Z0-9_])(%s)([a-zA-Z0-9_]{1,20})(?=(.|$))' % REGEXEN['at_signs'].pattern)
 REGEXEN['extract_reply'] = re.compile(ur'^(?:[%s])*%s([a-zA-Z0-9_]{1,20})' % (REGEXEN['spaces'].pattern, REGEXEN['at_signs'].pattern))
