@@ -68,6 +68,7 @@ LATIN_ACCENTS = [
     regex_range(0x1e00, 0x1eff)
 ]
 REGEXEN['latin_accents'] = re.compile(ur''.join(LATIN_ACCENTS))
+LATIN_ACCENTS = ''.join(LATIN_ACCENTS)
 
 RTL_CHARACTERS = ''.join([
     regex_range(0x0600,0x06FF),
@@ -145,13 +146,22 @@ except ValueError:
     # this is a narrow python build so we can't process the higher characters
     pass
 
+PUNCTUATION_CHARS = ur'!"#$%&\'()*+,-./:;<=>?@\[\]^_\`{|}~'
+SPACE_CHARS = ur" \t\n\x0B\f\r"
+CTRL_CHARS = ur"\x00-\x1F\x7F"
+
+HASHTAG_ALPHA = ur'[a-z_%s]' % (LATIN_ACCENTS + NON_LATIN_HASHTAG_CHARS + CJ_HASHTAG_CHARACTERS)
+HASHTAG_ALPHANUMERIC = ur'[a-z0-9_%s]' % (LATIN_ACCENTS + NON_LATIN_HASHTAG_CHARS + CJ_HASHTAG_CHARACTERS)
+HASHTAG_BOUNDARY = ur'\A|\z|[^&a-z0-9_%s]' % (LATIN_ACCENTS + NON_LATIN_HASHTAG_CHARS + CJ_HASHTAG_CHARACTERS)
+
+HASHTAG = re.compile(ur'(%s)(#|＃)(%s*%s%s*)' % (HASHTAG_BOUNDARY, HASHTAG_ALPHANUMERIC, HASHTAG_ALPHA, HASHTAG_ALPHANUMERIC), re.IGNORECASE)
+
 REGEXEN['at_signs'] = re.compile(ur'[%s]' % ur'|'.join(list(u'@＠')))
 REGEXEN['extract_mentions'] = re.compile(ur'(^|[^a-zA-Z0-9_])(%s)([a-zA-Z0-9_]{1,20})(?=(.|$))' % REGEXEN['at_signs'].pattern)
 REGEXEN['extract_reply'] = re.compile(ur'^(?:[%s])*%s([a-zA-Z0-9_]{1,20})' % (REGEXEN['spaces'].pattern, REGEXEN['at_signs'].pattern))
 
 # Characters considered valid in a hashtag but not at the beginning, where only a-z and 0-9 are valid.
-HASHTAG_CHARACTERS = re.compile(ur'[a-z0-9_%s]' % REGEXEN['latin_accents'].pattern, re.IGNORECASE) 
-REGEXEN['auto_link_hashtags'] = re.compile(ur'(^|[^0-9A-Z&\/]+)(#|＃)([0-9A-Z_]*[A-Z_]+%s*)' % HASHTAG_CHARACTERS.pattern, re.IGNORECASE)
+REGEXEN['auto_link_hashtags'] = HASHTAG
 REGEXEN['auto_link_usernames_or_lists'] = re.compile(ur'([^a-zA-Z0-9_]|^)([@＠]+)([a-zA-Z0-9_]{1,20})(\/[a-zA-Z][a-zA-Z0-9\u0080-\u00ff\-]{0,79})?')
 REGEXEN['auto_link_emoticon'] = re.compile(ur'(8\-\#|8\-E|\+\-\(|\`\@|\`O|\&lt;\|:~\(|\}:o\{|:\-\[|\&gt;o\&lt;|X\-\/|\[:-\]\-I\-|\/\/\/\/Ö\\\\\\\\|\(\|:\|\/\)|∑:\*\)|\( \| \))')
 
