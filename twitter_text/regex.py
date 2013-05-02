@@ -35,7 +35,7 @@ INVALID_CHARACTERS  =   [
     0xFFFF,                                 # Special
     0x202A, 0x202B, 0x202C, 0x202D, 0x202E, # Directional change
 ]
-REGEXEN['invalid_control_characters']   =   [hex(x) for x in INVALID_CHARACTERS]
+REGEXEN['invalid_control_characters']   =   [unichr(x) for x in INVALID_CHARACTERS]
 
 REGEXEN['at_signs'] = re.compile(ur'[%s]' % ur'|'.join(list(u'@＠')))
 REGEXEN['extract_mentions'] = re.compile(ur'(^|[^a-zA-Z0-9_])(%s)([a-zA-Z0-9_]{1,20})(?=(.|$))' % REGEXEN['at_signs'].pattern)
