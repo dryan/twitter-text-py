@@ -150,6 +150,7 @@ PUNCTUATION_CHARS = ur'!"#$%&\'()*+,-./:;<=>?@\[\]^_\`{|}~'
 SPACE_CHARS = ur" \t\n\x0B\f\r"
 CTRL_CHARS = ur"\x00-\x1F\x7F"
 
+# A hashtag must contain latin characters, numbers and underscores, but not all numbers.
 HASHTAG_ALPHA = ur'[a-z_%s]' % (LATIN_ACCENTS + NON_LATIN_HASHTAG_CHARS + CJ_HASHTAG_CHARACTERS)
 HASHTAG_ALPHANUMERIC = ur'[a-z0-9_%s]' % (LATIN_ACCENTS + NON_LATIN_HASHTAG_CHARS + CJ_HASHTAG_CHARACTERS)
 HASHTAG_BOUNDARY = ur'\A|\z|[^&a-z0-9_%s]' % (LATIN_ACCENTS + NON_LATIN_HASHTAG_CHARS + CJ_HASHTAG_CHARACTERS)
