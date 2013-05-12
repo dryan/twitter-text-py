@@ -159,7 +159,18 @@ HASHTAG = re.compile(ur'(%s)(#|＃)(%s*%s%s*)' % (HASHTAG_BOUNDARY, HASHTAG_ALPH
 REGEXEN['valid_hashtag'] = HASHTAG
 REGEXEN['end_hashtag_match'] = ur'\A(?:[#＃]|:\/\/)'
 
-REGEXEN['at_signs'] = re.compile(ur'[%s]' % ur'|'.join(list(u'@＠')))
+REGEXEN['valid_mention_preceding_chars'] = re.compile(r'(?:[^a-zA-Z0-9_!#\$%&*@＠]|^|RT:?)')
+REGEXEN['at_signs'] = re.compile(ur'[@＠]')
+REGEXEN['valid_mention_or_list'] = re.compile(
+    REGEXEN['valid_mention_preceding_chars'].pattern.decode('utf-8') +  # preceding character
+    REGEXEN['at_signs'].pattern +                                       # at mark
+    ur'([a-zA-Z0-9_]{1,20})' +                                          # screen name
+    ur'(\/[a-zA-Z][a-zA-Z0-9_\-]{0,24})?'                               # list (optional)
+)
+
+REGEXEN['valid_reply'] = re.compile(ur'^(?:%s)*%s([a-zA-Z0-9_]{1,20})' % (REGEXEN['spaces'].pattern, REGEXEN['at_signs'].pattern))
+REGEXEN['end_mention_match'] = re.compile(ur'\A(?:%s|%s|:\/\/)' % (REGEXEN['at_signs'].pattern, REGEXEN['latin_accents'].pattern))
+
 REGEXEN['extract_mentions'] = re.compile(ur'(^|[^a-zA-Z0-9_])(%s)([a-zA-Z0-9_]{1,20})(?=(.|$))' % REGEXEN['at_signs'].pattern)
 REGEXEN['extract_reply'] = re.compile(ur'^(?:[%s])*%s([a-zA-Z0-9_]{1,20})' % (REGEXEN['spaces'].pattern, REGEXEN['at_signs'].pattern))
 
