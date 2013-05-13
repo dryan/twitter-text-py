@@ -68,6 +68,14 @@ OPTIONS_NOT_ATTRIBUTES = (
     'link_text_transform',
 )
 
+HTML_ENTITIES = {
+  '&': '&amp;',
+  '>': '&gt;',
+  '<': '&lt;',
+  '"': '&quot;',
+  "'": '&#39;',
+}
+
 BOOLEAN_ATTRIBUTES = (
     'disabled', 
     'readonly',
@@ -227,7 +235,9 @@ class Autolink(object):
 
     # begin private methods
     def _html_escape(self, text):
-        return cgi.escape(text.decode('utf-8').encode('ascii', 'xmlcharrefreplace'), quote = True)
+        for char in HTML_ENTITIES:
+            text = text.replace(char, HTML_ENTITIES[char])
+        return text
 
     def _extract_html_attrs_from_options(self, options = {}):
         html_attrs = options.get('html_attrs', {})
