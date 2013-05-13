@@ -102,10 +102,16 @@ class Extractor(object):
 
         possible_entries    =   []
         for match in REGEXEN['valid_mention_or_list'].finditer(self.text):
-            print match.groups()
+            try:
+                after = self.text[match.end()]
+            except IndexError:
+                # the mention was the last character in the string
+                after = None
+            if after and REGEXEN['end_mention_match'].match(after) or match.groups()[2].find('http') == 0:
+                continue
             possible_entries.append({
                 'screen_name':  transform(match.groups()[2]),
-                'list_slug':    match.groups()[3],
+                'list_slug':    match.groups()[3] or '',
                 'indices':      [match.start() + len(match.groups()[0]), match.end()]
             })
 
@@ -123,7 +129,10 @@ class Extractor(object):
 
         possible_screen_name = REGEXEN['valid_reply'].match(self.text)
         if possible_screen_name is not None:
-            possible_screen_name = transform(possible_screen_name.group(1))
+            if possible_screen_name.group(1).find('http') > -1:
+                possible_screen_name = None
+            else:
+                possible_screen_name = transform(possible_screen_name.group(1))
         return possible_screen_name
         
     def extract_urls(self, transform = lambda x: x):
@@ -147,7 +156,7 @@ class Extractor(object):
         urls = []
         for match in REGEXEN['valid_url'].finditer(self.text):
             complete, before, url, protocol, domain, port, path, query = match.groups()
-            start_position = match.start() + (len(before) if before else 0)
+            start_position = match.start() + len(before or '')
             end_position = match.end()
             # If protocol is missing and domain contains non-ASCII characters,
             # extract ASCII-only domains.
@@ -156,10 +165,11 @@ class Extractor(object):
                     continue
                 last_url = None
                 last_url_invalid_match = None
-                for ascii_domain in REGEXEN['valid_ascii_domain'].split(domain):
+                for ascii_domain in REGEXEN['valid_ascii_domain'].finditer(domain):
+                    ascii_domain = ascii_domain.group()
                     last_url = {
                         'url':      ascii_domain,
-                        'indices':  [start_position + complete.find(ascii_domain), start_position + complete.find(ascii_domain) + len(ascii_domain)]
+                        'indices':  [start_position - len(before or '') + complete.find(ascii_domain), start_position - len(before or '') + complete.find(ascii_domain) + len(ascii_domain)]
                     }
                     last_url_invalid_match = REGEXEN['invalid_short_domain'].search(ascii_domain) is not None
                     if not last_url_invalid_match:
@@ -207,7 +217,7 @@ class Extractor(object):
             before, hashchar, hashtext = match.groups()
             start_position, end_position = match.span()
             start_position = start_position + len(before)
-            if not (REGEXEN['end_hashtag_match'].match(self.text[end_position]) if len(self.text) > end_position else None):
+            if not (REGEXEN['end_hashtag_match'].match(self.text[end_position]) if len(self.text) > end_position else None) and not hashtext.find('http') == 0:
                 tags.append({
                     'hashtag':  hashtext,
                     'indices':  [start_position, end_position]
@@ -250,7 +260,7 @@ class Extractor(object):
         for match in REGEXEN['valid_cashtag'].finditer(self.text):
             before, dollar, cashtext = match.groups()
             start_position, end_position = match.span()
-            start_position = start_position + len(before) + len(dollar)
+            start_position = start_position + len(before or '')
             tags.append({
                 'cashtag':  cashtext,
                 'indices':  [start_position, end_position]
