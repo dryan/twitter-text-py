@@ -115,7 +115,8 @@ class Autolink(object):
         # NOTE deprecate these attributes not options keys in options hash, then use html_attrs
         options.update(DEFAULT_OPTIONS)
         options['html_attrs'] = self._extract_html_attrs_from_options(options)
-        options['html_attrs']['rel'] = "nofollow" if not options.get('suppress_no_follow') else ""
+        if not options.get('suppress_no_follow', False):
+            options['html_attrs']['rel'] = "nofollow"
 
         entities.sort(key = lambda entity: entity['indices'][0], reverse = True)
         chars = self.text
