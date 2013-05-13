@@ -15,7 +15,7 @@ class Extractor(object):
     def remove_overlapping_entities(self, entities):
         """
         Remove overlapping entities.
-        This returns a new array with no overlapping entities.
+        This returns a new list with no overlapping entities.
         """
 
         # sort by start index
@@ -31,9 +31,9 @@ class Extractor(object):
 
     def extract_entities_with_indices(self, options = {}, transform = lambda x: x):
         """
-        Extracts all usernames, lists, hashtags and URLs  in the Tweet <tt>text</tt>
+        Extracts all usernames, lists, hashtags and URLs  in the Tweet text
         along with the indices for where the entity ocurred
-        If the <tt>text</tt> is <tt>nil</tt> or contains no entity an empty array
+        If the text is None or contains no entity an empty list
         will be returned.
 
         If a transform is given then it will be called for each entity.
@@ -56,8 +56,8 @@ class Extractor(object):
 
     def extract_mentioned_screen_names(self, transform = lambda x: x):
         """
-        Extracts a list of all usernames mentioned in the Tweet <tt>text</tt>. If the
-        <tt>text</tt> is <tt>nil</tt> or contains no username mentions an empty array
+        Extracts a list of all usernames mentioned in the Tweet text. If the
+        text is None or contains no username mentions an empty list
         will be returned.
 
         If a transform is given then it will be called for each username.
@@ -66,13 +66,13 @@ class Extractor(object):
 
     def extract_mentioned_screen_names_with_indices(self, transform = lambda x: x):
         """
-        Extracts a list of all usernames mentioned in the Tweet <tt>text</tt>
+        Extracts a list of all usernames mentioned in the Tweet text
         along with the indices for where the mention ocurred.  If the
-        <tt>text</tt> is nil or contains no username mentions, an empty array
+        text is None or contains no username mentions, an empty list
         will be returned.
 
         If a transform is given, then it will be called with each username, the start
-        index, and the end index in the <tt>text</tt>.
+        index, and the end index in the text.
         """
         if not self.text:
             return []
@@ -88,13 +88,13 @@ class Extractor(object):
 
     def extract_mentions_or_lists_with_indices(self, transform = lambda x: x):
         """
-        Extracts a list of all usernames or lists mentioned in the Tweet <tt>text</tt>
+        Extracts a list of all usernames or lists mentioned in the Tweet text
         along with the indices for where the mention ocurred.  If the
-        <tt>text</tt> is nil or contains no username or list mentions, an empty array
+        text is None or contains no username or list mentions, an empty list
         will be returned.
 
         If a transform is given, then it will be called with each username, list slug, the start
-        index, and the end index in the <tt>text</tt>. The list_slug will be an empty stirng
+        index, and the end index in the text. The list_slug will be an empty stirng
         if this is a username mention.
         """
         if not REGEXEN['at_signs'].search(self.text):
@@ -112,8 +112,8 @@ class Extractor(object):
         
     def extract_reply_screen_name(self, transform = lambda x: x):
         """
-        Extracts the username username replied to in the Tweet <tt>text</tt>. If the
-        <tt>text</tt> is <tt>nil</tt> or is not a reply nil will be returned.
+        Extracts the username username replied to in the Tweet text. If the
+        text is None or is not a reply None will be returned.
 
         If a transform is given then it will be called with the username replied to (if any)
         """
@@ -127,8 +127,8 @@ class Extractor(object):
         
     def extract_urls(self, transform = lambda x: x):
         """
-        Extracts a list of all URLs included in the Tweet <tt>text</tt>. If the
-        <tt>text</tt> is <tt>nil</tt> or contains no URLs an empty array
+        Extracts a list of all URLs included in the Tweet text. If the
+        text is None or contains no URLs an empty list
         will be returned.
 
         If a transform is given then it will be called for each URL.
@@ -137,9 +137,9 @@ class Extractor(object):
         
     def extract_urls_with_indices(self, options = {'extract_url_without_protocol': True}):
         """
-        Extracts a list of all URLs included in the Tweet <tt>text</tt> along
-        with the indices. If the <tt>text</tt> is <tt>nil</tt> or contains no
-        URLs an empty array will be returned.
+        Extracts a list of all URLs included in the Tweet text along
+        with the indices. If the text is None or contains no
+        URLs an empty list will be returned.
 
         If a block is given then it will be called for each URL.
         """
@@ -183,9 +183,9 @@ class Extractor(object):
         
     def extract_hashtags(self, transform = lambda x: x):
         """
-        Extracts a list of all hashtags included in the Tweet <tt>text</tt>. If the
-        <tt>text</tt> is <tt>nil</tt> or contains no hashtags an empty array
-        will be returned. The array returned will not include the leading <tt>#</tt>
+        Extracts a list of all hashtags included in the Tweet text. If the
+        text is None or contains no hashtags an empty list
+        will be returned. The list returned will not include the leading #
         character.
 
         If a block is given then it will be called for each hashtag.
@@ -194,9 +194,9 @@ class Extractor(object):
         
     def extract_hashtags_with_indices(self, options = {'check_url_overlap': True}, transform = lambda x: x):
         """
-        Extracts a list of all hashtags included in the Tweet <tt>text</tt>. If the
-        <tt>text</tt> is <tt>nil</tt> or contains no hashtags an empty array
-        will be returned. The array returned will not include the leading <tt>#</tt>
+        Extracts a list of all hashtags included in the Tweet text. If the
+        text is None or contains no hashtags an empty list
+        will be returned. The list returned will not include the leading #
         character.
 
         If a block is given then it will be called for each hashtag.
@@ -224,9 +224,9 @@ class Extractor(object):
 
     def extract_cashtags(self, transform = lambda x: x):
         """
-        Extracts a list of all cashtags included in the Tweet <tt>text</tt>. If the
-        <tt>text</tt> is <tt>nil</tt> or contains no cashtags an empty array
-        will be returned. The array returned will not include the leading <tt>$</tt>
+        Extracts a list of all cashtags included in the Tweet text. If the
+        text is None or contains no cashtags an empty list
+        will be returned. The list returned will not include the leading $
         character.
 
         If a block is given then it will be called for each cashtag.
@@ -235,9 +235,9 @@ class Extractor(object):
 
     def extract_cashtags_with_indices(self, transform = lambda x: x):
         """
-        Extracts a list of all cashtags included in the Tweet <tt>text</tt>. If the
-        <tt>text</tt> is <tt>nil</tt> or contains no cashtags an empty array
-        will be returned. The array returned will not include the leading <tt>$</tt>
+        Extracts a list of all cashtags included in the Tweet text. If the
+        text is None or contains no cashtags an empty list
+        will be returned. The list returned will not include the leading $
         character.
 
         If a block is given then it will be called for each cashtag.
