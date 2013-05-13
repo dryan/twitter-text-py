@@ -9,7 +9,7 @@ class Extractor(object):
     of usernames, lists, URLs and hashtags.
     """
     
-    def __init__(self, text, transform = None):
+    def __init__(self, text):
         self.text = force_unicode(text)
 
     def remove_overlapping_entities(self, entities):
@@ -42,10 +42,10 @@ class Extractor(object):
             return []
 
         # extract all entities
-        entities    =   self.extract_urls_with_indices(self.text, options = options) + \
-                        self.extract_hashtags_with_indices(self.text, check_url_overlap = False) + \
-                        self.extract_mentions_or_lists_with_indices(self.text) + \
-                        self.extract_cashtags_with_indices(self.text)
+        entities    =   self.extract_urls_with_indices(options) + \
+                        self.extract_hashtags_with_indices({'check_url_overlap': False}) + \
+                        self.extract_mentions_or_lists_with_indices() + \
+                        self.extract_cashtags_with_indices()
 
         entities    =   self.remove_overlapping_entities(entities)
 
@@ -102,10 +102,11 @@ class Extractor(object):
 
         possible_entries    =   []
         for match in REGEXEN['valid_mention_or_list'].finditer(self.text):
+            print match.groups()
             possible_entries.append({
-                'screen_name':  transform(match.groups()[0]),
-                'list_slug':    match.groups()[1],
-                'indices':      [match.start(), match.end()]
+                'screen_name':  transform(match.groups()[2]),
+                'list_slug':    match.groups()[3],
+                'indices':      [match.start() + len(match.groups()[0]), match.end()]
             })
 
         return possible_entries
@@ -205,8 +206,8 @@ class Extractor(object):
         for match in REGEXEN['valid_hashtag'].finditer(self.text):
             before, hashchar, hashtext = match.groups()
             start_position, end_position = match.span()
-            start_position = start_position + len(before) + len(hashchar)
-            if not (REGEXEN['end_hashtag_match'].match(self.text[end_position + 1]) if len(self.text) > end_position else None):
+            start_position = start_position + len(before)
+            if not (REGEXEN['end_hashtag_match'].match(self.text[end_position]) if len(self.text) > end_position else None):
                 tags.append({
                     'hashtag':  hashtext,
                     'indices':  [start_position, end_position]
