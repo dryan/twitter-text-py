@@ -158,7 +158,7 @@ HASHTAG_BOUNDARY = ur'\A|\z|[^&a-z0-9_%s]' % (LATIN_ACCENTS + NON_LATIN_HASHTAG_
 HASHTAG = re.compile(ur'(%s)(#|＃)(%s*%s%s*)' % (HASHTAG_BOUNDARY, HASHTAG_ALPHANUMERIC, HASHTAG_ALPHA, HASHTAG_ALPHANUMERIC), re.IGNORECASE)
 
 REGEXEN['valid_hashtag'] = HASHTAG
-REGEXEN['end_hashtag_match'] = ur'\A(?:[#＃]|:\/\/)'
+REGEXEN['end_hashtag_match'] = re.compile(ur'\A(?:[#＃]|:\/\/)')
 
 REGEXEN['valid_mention_preceding_chars'] = re.compile(r'(?:[^a-zA-Z0-9_!#\$%&*@＠]|^|RT:?)')
 REGEXEN['at_signs'] = re.compile(ur'[@＠]')
@@ -168,6 +168,9 @@ REGEXEN['valid_mention_or_list'] = re.compile(
     ur'([a-zA-Z0-9_]{1,20})' +                                          # screen name
     ur'(\/[a-zA-Z][a-zA-Z0-9_\-]{0,24})?'                               # list (optional)
 )
+REGEXEN['valid_reply'] = re.compile(ur'^(?:%s)*%s([a-zA-Z0-9_]{1,20})' % (REGEXEN['spaces'].pattern, REGEXEN['at_signs'].pattern))
+ # Used in Extractor for final filtering
+REGEXEN['end_mention_match'] = re.compile(ur'\A(?:%s|%s|:\/\/)' % (REGEXEN['at_signs'].pattern, REGEXEN['latin_accents'].pattern))
 
 # URL related hash regex collection
 REGEXEN['valid_url_preceding_chars'] = re.compile(ur'(?:[^A-Z0-9@＠$#＃%s]|^)' % ur''.join(REGEXEN['invalid_control_characters']), re.IGNORECASE)
@@ -204,7 +207,7 @@ REGEXEN['valid_url_path'] = re.compile(ur'(?:(?:%s*(?:%s %s*)*%s)|(?:%s+\/))' % 
 
 REGEXEN['valid_url_query_chars'] = re.compile(ur"[a-z0-9!?\*'\(\);:&=\+\$\/%#\[\]\-_\.,~|@]", re.IGNORECASE)
 REGEXEN['valid_url_query_ending_chars'] = re.compile(ur'[a-z0-9_&=#\/]', re.IGNORECASE)
-REGEXEN['valid_url'] = re.compile(ur'((%s)((https?:\/\/?(%s)(?::(%s))?(/%s*)?(\?%s*%s)?)))' % (
+REGEXEN['valid_url'] = re.compile(ur'((%s)((https?):\/\/?(%s)(?::(%s))?(/%s*)?(\?%s*%s)?))' % (
     REGEXEN['valid_url_preceding_chars'].pattern,
     REGEXEN['valid_domain'].pattern,
     REGEXEN['valid_port_number'].pattern,
@@ -273,48 +276,3 @@ REGEXEN['validate_url_fragment'] = re.compile(ur'(%s|/|\?)*' % REGEXEN['validate
 REGEXEN['validate_url_unencoded'] = re.compile(ur'\A(?:([^:/?#]+)://)?([^/?#]*)([^?#]*)(?:\?([^#]*))?(?:\#(.*))?\Z', re.IGNORECASE)
 
 REGEXEN['rtl_chars'] = re.compile(ur'[%s]' % RTL_CHARACTERS, re.IGNORECASE)
-
-REGEXEN['valid_reply'] = re.compile(ur'^(?:%s)*%s([a-zA-Z0-9_]{1,20})' % (REGEXEN['spaces'].pattern, REGEXEN['at_signs'].pattern))
-REGEXEN['end_mention_match'] = re.compile(ur'\A(?:%s|%s|:\/\/)' % (REGEXEN['at_signs'].pattern, REGEXEN['latin_accents'].pattern))
-
-REGEXEN['extract_mentions'] = re.compile(ur'(^|[^a-zA-Z0-9_])(%s)([a-zA-Z0-9_]{1,20})(?=(.|$))' % REGEXEN['at_signs'].pattern)
-REGEXEN['extract_reply'] = re.compile(ur'^(?:[%s])*%s([a-zA-Z0-9_]{1,20})' % (REGEXEN['spaces'].pattern, REGEXEN['at_signs'].pattern))
-
-REGEXEN['auto_link_usernames_or_lists'] = re.compile(ur'([^a-zA-Z0-9_]|^)([@＠]+)([a-zA-Z0-9_]{1,20})(\/[a-zA-Z][a-zA-Z0-9\u0080-\u00ff\-]{0,79})?')
-REGEXEN['auto_link_emoticon'] = re.compile(ur'(8\-\#|8\-E|\+\-\(|\`\@|\`O|\&lt;\|:~\(|\}:o\{|:\-\[|\&gt;o\&lt;|X\-\/|\[:-\]\-I\-|\/\/\/\/Ö\\\\\\\\|\(\|:\|\/\)|∑:\*\)|\( \| \))')
-
-# URL related hash regex collection
-REGEXEN['valid_preceding_chars'] = re.compile(ur"(?:[^\/\"':!=]|^|\:)")
-punct = re.escape(string.punctuation)
-REGEXEN['valid_domain'] = re.compile(ur'(?:[^%s\s][\.-](?=[^%s\s])|[^%s\s]){1,}\.[a-z]{2,}(?::[0-9]+)?' % (punct, punct, punct), re.IGNORECASE)
-REGEXEN['valid_url_path_chars'] = re.compile(ur'[\.\,]?[a-z0-9!\*\'\(\);:=\+\$\/%#\[\]\-_,~@\.]', re.IGNORECASE)
-# Valid end-of-path chracters (so /foo. does not gobble the period).
-#   1. Allow ) for Wikipedia URLs.
-#   2. Allow =&# for empty URL parameters and other URL-join artifacts
-REGEXEN['valid_url_path_ending_chars'] = re.compile(ur'[a-z0-9\)=#\/]', re.IGNORECASE)
-REGEXEN['valid_url_query_chars'] = re.compile(ur'[a-z0-9!\*\'\(\);:&=\+\$\/%#\[\]\-_\.,~]', re.IGNORECASE)
-REGEXEN['valid_url_query_ending_chars'] = re.compile(ur'[a-z0-9_&=#]', re.IGNORECASE)
-REGEXEN['valid_url'] = re.compile(u'''
-    (%s)
-    (
-        (https?:\/\/|www\.)
-        (%s)
-        (/%s*%s?)?
-        (\?%s*%s)?
-    )
-    ''' % (
-        REGEXEN['valid_preceding_chars'].pattern,
-        REGEXEN['valid_domain'].pattern,
-        REGEXEN['valid_url_path_chars'].pattern,
-        REGEXEN['valid_url_path_ending_chars'].pattern,
-        REGEXEN['valid_url_query_chars'].pattern,
-        REGEXEN['valid_url_query_ending_chars'].pattern
-    ),
-re.IGNORECASE + re.X)
-# groups:
-# 1 - Preceding character
-# 2 - URL
-# 3 - Protocol or www.
-# 4 - Domain and optional port number
-# 5 - URL path
-# 6 - Query string

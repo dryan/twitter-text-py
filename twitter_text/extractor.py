@@ -9,156 +9,250 @@ class Extractor(object):
     of usernames, lists, URLs and hashtags.
     """
     
-    def __init__(self, text):
+    def __init__(self, text, transform = None):
         self.text = force_unicode(text)
-    
-    def extract_mentioned_screen_names(self, transform = False):
-        """
-        Extracts a list of all usernames mentioned in the Tweet text. If the
-        text contains no username mentions an empty list will be returned.
-        
-        If a transform is given, then it will be called with each username.
-        """
-        screen_names_only = []
-        matches = self.extract_mentioned_screen_names_with_indices()
-        for screen_name in matches:
-            if transform:
-                screen_name['screen_name'] = transform(screen_name['screen_name'])
-            screen_names_only.append(screen_name['screen_name'])
-            del(screen_name)
-        del(matches)
-        del(transform)
-        return screen_names_only
 
-    def extract_mentioned_screen_names_with_indices(self, transform = False):
+    def remove_overlapping_entities(self, entities):
         """
-        Extracts a list of all usersnames mentioned in the Tweet text
+        Remove overlapping entities.
+        This returns a new array with no overlapping entities.
+        """
+
+        # sort by start index
+        entities.sort(key = lambda entity: entity['indices'][0])
+
+        # remove duplicates
+        prev    =   None
+        for entity in [e for e in entities]:
+            if prev and prev['indices'][1] > entity['indices'][0]:
+                entities.remove(entity)
+            prev    =   entity
+        return entities
+
+    def extract_entities_with_indices(self, options = {}, transform = lambda x: x):
+        """
+        Extracts all usernames, lists, hashtags and URLs  in the Tweet <tt>text</tt>
+        along with the indices for where the entity ocurred
+        If the <tt>text</tt> is <tt>nil</tt> or contains no entity an empty array
+        will be returned.
+
+        If a transform is given then it will be called for each entity.
+        """
+        if not self.text:
+            return []
+
+        # extract all entities
+        entities    =   self.extract_urls_with_indices(self.text, options = options) + \
+                        self.extract_hashtags_with_indices(self.text, check_url_overlap = False) + \
+                        self.extract_mentions_or_lists_with_indices(self.text) + \
+                        self.extract_cashtags_with_indices(self.text)
+
+        entities    =   self.remove_overlapping_entities(entities)
+
+        for entity in entities:
+            entity  =   transform(entity)
+
+        return entities
+
+    def extract_mentioned_screen_names(self, transform = lambda x: x):
+        """
+        Extracts a list of all usernames mentioned in the Tweet <tt>text</tt>. If the
+        <tt>text</tt> is <tt>nil</tt> or contains no username mentions an empty array
+        will be returned.
+
+        If a transform is given then it will be called for each username.
+        """
+        return [transform(mention['screen_name']) for mention in self.extract_mentioned_screen_names_with_indices()]
+
+    def extract_mentioned_screen_names_with_indices(self, transform = lambda x: x):
+        """
+        Extracts a list of all usernames mentioned in the Tweet <tt>text</tt>
         along with the indices for where the mention ocurred.  If the
-        text contains no username mentions, an empty list will be returned.
-        
+        <tt>text</tt> is nil or contains no username mentions, an empty array
+        will be returned.
+
         If a transform is given, then it will be called with each username, the start
-        index, and the end index in the text.
+        index, and the end index in the <tt>text</tt>.
         """
+        if not self.text:
+            return []
+
         possible_screen_names = []
-        matches = REGEXEN['extract_mentions'].finditer(self.text)
-        for match in matches:
-            start = match.start() + len(match.group(1))
-            end = start + len(match.group(2)) + len(match.group(3))
-            if transform:
-                possible_screen_name = transform(match.group(3), start, end)
-            else:
-                possible_screen_name = {
-                    'screen_name': match.group(3),
-                    'indices': (start, end)
-                }
-            possible_screen_names.append(possible_screen_name)
-            del(possible_screen_name)
-        del(matches)
-        del(transform)
+        for match in self.extract_mentions_or_lists_with_indices():
+            if not match['list_slug']:
+                possible_screen_names.append({
+                    'screen_name':  transform(match['screen_name']),
+                    'indices':      match['indices']
+                })
         return possible_screen_names
-        
-    def extract_reply_screen_name(self, transform = False):
+
+    def extract_mentions_or_lists_with_indices(self, transform = lambda x: x):
         """
-        Extracts the first username replied to in the Tweet text. If the
-        text does not contain a reply None will be returned.
+        Extracts a list of all usernames or lists mentioned in the Tweet <tt>text</tt>
+        along with the indices for where the mention ocurred.  If the
+        <tt>text</tt> is nil or contains no username or list mentions, an empty array
+        will be returned.
+
+        If a transform is given, then it will be called with each username, list slug, the start
+        index, and the end index in the <tt>text</tt>. The list_slug will be an empty stirng
+        if this is a username mention.
+        """
+        if not REGEXEN['at_signs'].search(self.text):
+            return []
+
+        possible_entries    =   []
+        for match in REGEXEN['valid_mention_or_list'].finditer(self.text):
+            possible_entries.append({
+                'screen_name':  transform(match.groups()[0]),
+                'list_slug':    match.groups()[1],
+                'indices':      [match.start(), match.end()]
+            })
+
+        return possible_entries
         
+    def extract_reply_screen_name(self, transform = lambda x: x):
+        """
+        Extracts the username username replied to in the Tweet <tt>text</tt>. If the
+        <tt>text</tt> is <tt>nil</tt> or is not a reply nil will be returned.
+
         If a transform is given then it will be called with the username replied to (if any)
         """
-        possible_screen_name = REGEXEN['extract_reply'].match(self.text)
+        if not self.text:
+            return None
+
+        possible_screen_name = REGEXEN['valid_reply'].match(self.text)
         if possible_screen_name is not None:
-            possible_screen_name = possible_screen_name.group(1)
-        if transform:
-            possible_screen_name = transform(possible_screen_name)
-        del(transform)
+            possible_screen_name = transform(possible_screen_name.group(1))
         return possible_screen_name
         
-    def extract_urls(self, transform = False):
+    def extract_urls(self, transform = lambda x: x):
         """
-        Extracts a list of all URLs included in the Tweet text. If the
-        text contains no URLs an empty list will be returned.
-        
-        If a transform is given then it will be called for each URL.
-        """
-        urls_only = []
-        matches = self.extract_urls_with_indices()
-        for url in matches:
-            if transform:
-                url['url'] = transform(url['url'])
-            urls_only.append(url['url'])
-            del(url)
-        del(matches)
-        del(transform)
-        return urls_only
-        
-    def extract_urls_with_indices(self, transform = False):
-        """
-        Extracts a list of all URLs included in the Tweet text along
-        with the indices. If the text contains no URLs an empty list
+        Extracts a list of all URLs included in the Tweet <tt>text</tt>. If the
+        <tt>text</tt> is <tt>nil</tt> or contains no URLs an empty array
         will be returned.
-        
+
         If a transform is given then it will be called for each URL.
+        """
+        return [transform(url['url']) for url in self.extract_urls_with_indices()]
+        
+    def extract_urls_with_indices(self, options = {'extract_url_without_protocol': True}):
+        """
+        Extracts a list of all URLs included in the Tweet <tt>text</tt> along
+        with the indices. If the <tt>text</tt> is <tt>nil</tt> or contains no
+        URLs an empty array will be returned.
+
+        If a block is given then it will be called for each URL.
         """
         urls = []
-        matches = REGEXEN['valid_url'].finditer(self.text)
-        for match in matches:
-            start = match.start() + len(match.group(1))
-            end = start + len(match.group(2))
-            if transform:
-                url = transform(match.group(2), start, end)
+        for match in REGEXEN['valid_url'].finditer(self.text):
+            complete, before, url, protocol, domain, port, path, query = match.groups()
+            start_position = match.start() + (len(before) if before else 0)
+            end_position = match.end()
+            # If protocol is missing and domain contains non-ASCII characters,
+            # extract ASCII-only domains.
+            if not protocol:
+                if not options.get('extract_url_without_protocol') or REGEXEN['invalid_url_without_protocol_preceding_chars'].search(before):
+                    continue
+                last_url = None
+                last_url_invalid_match = None
+                for ascii_domain in REGEXEN['valid_ascii_domain'].split(domain):
+                    last_url = {
+                        'url':      ascii_domain,
+                        'indices':  [start_position + complete.find(ascii_domain), start_position + complete.find(ascii_domain) + len(ascii_domain)]
+                    }
+                    last_url_invalid_match = REGEXEN['invalid_short_domain'].search(ascii_domain) is not None
+                    if not last_url_invalid_match:
+                        urls.append(last_url)
+                # no ASCII-only domain found. Skip the entire URL
+                if not last_url:
+                    continue
+                if path:
+                    last_url['url'] = url.replace(domain, last_url['url'])
+                    last_url['indices'][1] = end_position
+                    if last_url_invalid_match:
+                        urls.append(last_url)
             else:
-                url = {
-                    'url': match.group(2),
-                    'indices': (start, end)
-                }
-            urls.append(url)
-            del(url)
-        del(matches)
-        del(transform)
+                if REGEXEN['valid_tco_url'].match(url):
+                    url = REGEXEN['valid_tco_url'].match(url).group()
+                    end_position = start_position + len(url)
+                urls.append({
+                    'url':      url,
+                    'indices':  [start_position, end_position]
+                })
         return urls
         
-    def extract_hashtags(self, transform = False):
+    def extract_hashtags(self, transform = lambda x: x):
         """
-        Extracts a list of all hashtags included in the Tweet text. If the
-        text contains no hashtags an empty list will be returned.
-        The list returned will not include the leading # character.
-        
-        If a transform is given then it will be called for each hashtag.
+        Extracts a list of all hashtags included in the Tweet <tt>text</tt>. If the
+        <tt>text</tt> is <tt>nil</tt> or contains no hashtags an empty array
+        will be returned. The array returned will not include the leading <tt>#</tt>
+        character.
+
+        If a block is given then it will be called for each hashtag.
         """
-        hashtags_only = []
-        matches = self.extract_hashtags_with_indices()
-        for hashtag in matches:
-            if transform:
-                hashtag['hashtag'] = transform(hashtag['hashtag'])
-            hashtags_only.append(hashtag['hashtag'])
-            del(hashtag)
-        del(matches)
-        del(transform)
+        return [transform(hashtag['hashtag']) for hashtag in self.extract_hashtags_with_indices()]
         
-        return hashtags_only
-        
-    def extract_hashtags_with_indices(self, transform = False):
+    def extract_hashtags_with_indices(self, options = {'check_url_overlap': True}, transform = lambda x: x):
         """
-        Extracts a list of all hashtags included in the Tweet text. If the
-        text contains no hashtags an empty list will be returned.
-        The list returned will not include the leading # character.
-        
-        If a transform is given then it will be called for each hashtag.
+        Extracts a list of all hashtags included in the Tweet <tt>text</tt>. If the
+        <tt>text</tt> is <tt>nil</tt> or contains no hashtags an empty array
+        will be returned. The array returned will not include the leading <tt>#</tt>
+        character.
+
+        If a block is given then it will be called for each hashtag.
         """
         tags = []
-        matches = REGEXEN['valid_hashtag'].finditer(self.text)
-        for match in matches:
-            start = match.start() + len(match.group(1))
-            end = start + len(match.group(2)) + len(match.group(3))
-            if transform:
-                tag = transform(match.group(3), start, end)
-            else:
-                tag = {
-                    'hashtag': match.group(3),
-                    'indices': (start, end)
-                }
-            tags.append(tag)
-            del(tag)
-        del(matches)
-        del(transform)
-        
+        for match in REGEXEN['valid_hashtag'].finditer(self.text):
+            before, hashchar, hashtext = match.groups()
+            start_position, end_position = match.span()
+            start_position = start_position + len(before) + len(hashchar)
+            if not (REGEXEN['end_hashtag_match'].match(self.text[end_position + 1]) if len(self.text) > end_position else None):
+                tags.append({
+                    'hashtag':  hashtext,
+                    'indices':  [start_position, end_position]
+                })
+
+        if options.get('check_url_overlap'):
+            urls = self.extract_urls_with_indices()
+            if len(urls):
+                tags = tags + urls
+                # remove duplicates
+                tags = self.remove_overlapping_entities(tags)
+                tags = [tag for tag in tags if 'hashtag' in tag]
+
+        return tags
+
+    def extract_cashtags(self, transform = lambda x: x):
+        """
+        Extracts a list of all cashtags included in the Tweet <tt>text</tt>. If the
+        <tt>text</tt> is <tt>nil</tt> or contains no cashtags an empty array
+        will be returned. The array returned will not include the leading <tt>$</tt>
+        character.
+
+        If a block is given then it will be called for each cashtag.
+        """
+        return [cashtag['cashtag'] for cashtag in self.extract_cashtags_with_indices()]
+
+    def extract_cashtags_with_indices(self, transform = lambda x: x):
+        """
+        Extracts a list of all cashtags included in the Tweet <tt>text</tt>. If the
+        <tt>text</tt> is <tt>nil</tt> or contains no cashtags an empty array
+        will be returned. The array returned will not include the leading <tt>$</tt>
+        character.
+
+        If a block is given then it will be called for each cashtag.
+        """
+        if not self.text or self.text.find('$') == -1:
+            return []
+
+        tags = []
+        for match in REGEXEN['valid_cashtag'].finditer(self.text):
+            before, dollar, cashtext = match.groups()
+            start_position, end_position = match.span()
+            start_position = start_position + len(before) + len(dollar)
+            tags.append({
+                'cashtag':  cashtext,
+                'indices':  [start_position, end_position]
+            })
+
         return tags
