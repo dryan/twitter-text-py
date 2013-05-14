@@ -391,6 +391,8 @@ class Autolink(object):
         at = chars[entity['indices'][0]]
 
         html_attrs = options.get('html_attrs', {}).copy()
+        if 'title' in html_attrs:
+            del(html_attrs['title'])
 
         if entity.get('list_slug') and not options.get('supress_lists'):
             href = options.get('list_url_transform', lambda sn: u'%s%s' % (options.get('list_url_base'), sn))(name)
