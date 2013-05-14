@@ -1,7 +1,18 @@
 # encoding=utf-8
 
-import twitter_text, sys, os, json
+import twitter_text, sys, os, json, argparse
 from twitter_text.unicode import force_unicode
+
+narrow_build = True
+try:
+    unichr(0x20000)
+    narrow_build = False
+except:
+    pass
+
+parser = argparse.ArgumentParser(description = u'Run the integration tests for twitter_text')
+parser.add_argument('--ignore-narrow-errors', '-i', help = u'Ignore errors caused by narrow builds', default = False, type = bool)
+args = parser.parse_args()
 
 try:
     import yaml
@@ -17,10 +28,10 @@ except ImportError:
         raise Exception('You need to install BeautifulSoup to run the tests')
 
 def success(text):
-    return u'\033[92m%s\033[0m\n' % text
+    return (u'\033[92m%s\033[0m\n' % text)
 
 def error(text):
-    return u'\033[91m%s\033[0m\n' % text
+    return (u'\033[91m%s\033[0m\n' % text)
 
 attempted = 0
 
@@ -31,9 +42,9 @@ def equal_nodes(expected, actual):
     pass
 
 def execute_test(result, test):
-    global passed, attempted, failed
+    global attempted
     attempted += 1
-    assert result == test.get('expected'), error(u'\nTest %d Failed: %s\n%s\n%s' % (attempted, test.get('description'), result, test.get('expected')))
+    assert result == test.get('expected'), error(u'\nTest %d Failed: %s' % (attempted, test.get('description')))
 
 # extractor section
 extractor_file = open(os.path.join('twitter-text-conformance', 'extract.yml'), 'r')
@@ -47,6 +58,8 @@ for section in extractor_tests.get('tests'):
     sys.stdout.write('\nTesting Extractor: %s\n' % section)
     sys.stdout.flush()
     for test in extractor_tests.get('tests').get(section):
+        if args.ignore_narrow_errors and section in ['hashtags'] and test.get('description') in ['Hashtag with ideographic iteration mark']:
+            continue
         extractor = twitter_text.extractor.Extractor(test.get('text'))
         if section == 'mentions':
             execute_test(extractor.extract_mentioned_screen_names(), test)
@@ -82,6 +95,8 @@ autolink_options = {'suppress_no_follow': True}
 for section in autolink_tests.get('tests'):
     sys.stdout.write('\nTesting Autolink: %s\n' % section)
     for test in autolink_tests.get('tests').get(section):
+        if args.ignore_narrow_errors and section in ['hashtags'] and test.get('description') in ['Autolink a hashtag containing ideographic iteration mark']:
+            continue
         autolink = twitter_text.autolink.Autolink(test.get('text'))
         if section == 'usernames':
             execute_test(autolink.auto_link_usernames_or_lists(autolink_options), test)
