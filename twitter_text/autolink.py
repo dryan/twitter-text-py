@@ -358,11 +358,12 @@ class Autolink(object):
 
         href = options.get('hashtag_url_transform', lambda ht: u'%s%s' % (options.get('hashtag_url_base'), ht))(hashtag)
 
+        html_attrs = {}
+        html_attrs.update(options.get('html_attrs', {}))
         html_attrs = {
             'class':    hashtag_class,
             'title':    u'#%s' % hashtag,
         }
-        html_attrs.update(options.get('html_attrs', {}))
 
         link = self._link_to_text_with_symbol(entity, hashchar, hashtag, href, html_attrs, options)
         return chars[:entity['indices'][0]] + link + chars[entity['indices'][1]:]
