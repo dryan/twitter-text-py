@@ -25,7 +25,7 @@ def execute_test(result, test):
     attempted += 1
     if result == test.get('expected'):
         passed += 1
-        success('Passed: %s' % test.get('description'))
+        # success('Passed: %s' % test.get('description'))
     else:
         failed += 1
         error(u'Failed: %s' % test.get('description'))
