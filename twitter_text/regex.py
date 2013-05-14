@@ -9,10 +9,21 @@ import re, string
 REGEXEN = {} # :nodoc:
 
 def regex_range(start, end = None):
-    if end:
-        return u'%s-%s' % (unichr(start), unichr(end))
-    else:
-        return u'%s' % unichr(start)
+    # handle out of range characters on narrow builds
+    try:
+        unichr(start)
+        if end:
+            return u'%s-%s' % (unichr(start), unichr(end))
+        else:
+            return u'%s' % unichr(start)
+    except ValueError:
+        # we're on a narrow build
+        start = (r'\U' + hex(start).replace('0x', '')).encode('unicode-escape')
+        if end:
+            end = (r'\U' + hex(end).replace('0x', '')).encode('unicode-escape')
+            return r'%s-%s' % (start, end)
+        else:
+            return r'%s' % start
 
 # Space is more than %20, U+3000 for example is the full-width space used with Kanji. Provide a short-hand
 # to access both the list of characters and a pattern suitible for use with String#split
@@ -133,18 +144,11 @@ CJ_HASHTAG_CHARACTERS = ''.join([
     regex_range(0x3041, 0x3096), regex_range(0x3099, 0x309E), # Hiragana
     regex_range(0x3400, 0x4DBF), # Kanji (CJK Extension A)
     regex_range(0x4E00, 0x9FFF), # Kanji (Unified)
+    regex_range(0x20000, 0x2A6DF), # Kanji (CJK Extension B)
+    regex_range(0x2A700, 0x2B73F), # Kanji (CJK Extension C)
+    regex_range(0x2B740, 0x2B81F), # Kanji (CJK Extension D)
+    regex_range(0x2F800, 0x2FA1F), regex_range(0x3003), regex_range(0x3005), regex_range(0x303B) # Kanji (CJK supplement)
 ])
-try:
-    CJ_HASHTAG_CHARACTERS   =   ''.join([
-        CJ_HASHTAG_CHARACTERS,
-        regex_range(0x20000, 0x2A6DF), # Kanji (CJK Extension B)
-        regex_range(0x2A700, 0x2B73F), # Kanji (CJK Extension C)
-        regex_range(0x2B740, 0x2B81F), # Kanji (CJK Extension D)
-        regex_range(0x2F800, 0x2FA1F), regex_range(0x3003), regex_range(0x3005), regex_range(0x303B) # Kanji (CJK supplement)
-    ])
-except ValueError:
-    # this is a narrow python build so we can't process the higher characters
-    pass
 
 PUNCTUATION_CHARS = ur'!"#$%&\'()*+,-./:;<=>?@\[\]^_\`{|}~'
 SPACE_CHARS = ur" \t\n\x0B\f\r"
