@@ -217,7 +217,7 @@ class Extractor(object):
             before, hashchar, hashtext = match.groups()
             start_position, end_position = match.span()
             start_position = start_position + len(before)
-            if not (REGEXEN['end_hashtag_match'].match(self.text[end_position]) if len(self.text) > end_position else None) and not hashtext.find('http') == 0:
+            if not (REGEXEN['end_hashtag_match'].match(self.text[end_position]) if len(self.text) > end_position else None) and not hashtext.find('http') == 0 and not REGEXEN['numeric_only'].match(hashtext):
                 tags.append({
                     'hashtag':  hashtext,
                     'indices':  [start_position, end_position]

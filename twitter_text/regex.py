@@ -159,6 +159,7 @@ HASHTAG = re.compile(ur'(%s)(#|＃)(%s*%s%s*)' % (HASHTAG_BOUNDARY, HASHTAG_ALPH
 
 REGEXEN['valid_hashtag'] = HASHTAG
 REGEXEN['end_hashtag_match'] = re.compile(ur'\A(?:[#＃]|:\/\/)', re.IGNORECASE + re.UNICODE)
+REGEXEN['numeric_only'] = re.compile(ur'^[\d]+$')
 
 REGEXEN['valid_mention_preceding_chars'] = re.compile(r'(?:[^a-zA-Z0-9_!#\$%&*@＠]|^|RT:?)')
 REGEXEN['at_signs'] = re.compile(ur'[@＠]')
