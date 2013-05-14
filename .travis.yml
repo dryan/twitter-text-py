@@ -7,3 +7,5 @@ install:
   - "pip install . --use-mirrors"
   - "pip install -r requirements.txt --use-mirrors"
 script: "python ./tests.py"
+notifications:
+  email: false
