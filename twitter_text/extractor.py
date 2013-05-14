@@ -26,7 +26,8 @@ class Extractor(object):
         for entity in [e for e in entities]:
             if prev and prev['indices'][1] > entity['indices'][0]:
                 entities.remove(entity)
-            prev    =   entity
+            else:
+                prev    =   entity
         return entities
 
     def extract_entities_with_indices(self, options = {}, transform = lambda x: x):
