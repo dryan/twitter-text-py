@@ -8,30 +8,32 @@ try:
 except ImportError:
     raise Exception('You need to install pyaml to run the tests')
 
+try:
+    from bs4 import BeautifulSoup
+except ImportError:
+    try:
+        from BeautifulSoup import BeautifulSoup
+    except ImportError:
+        raise Exception('You need to install BeautifulSoup to run the tests')
+
 def success(text):
-    sys.stdout.write(u'\033[92m%s\033[0m\n' % text)
-    sys.stdout.flush()
+    return u'\033[92m%s\033[0m\n' % text
 
 def error(text):
-    sys.stderr.write(u'\033[91m%s\033[0m\n' % text)
-    sys.stderr.flush()
+    return u'\033[91m%s\033[0m\n' % text
 
-passed = 0
 attempted = 0
-failed = 0
+
+def assert_equal_without_attribute_order(expected, actual, failure_message = None):
+    assert equal_nodes(BeautifulSoup(expected), BeautifulSoup(actual)), error(u'Test %d Failed: %s\n%s\n%s' % (attempted, test.get('description'), result, test.get('expected')))
+
+def equal_nodes(expected, actual):
+    pass
 
 def execute_test(result, test):
     global passed, attempted, failed
     attempted += 1
-    if result == test.get('expected'):
-        passed += 1
-        # success('Passed: %s' % test.get('description'))
-    else:
-        failed += 1
-        error(u'Failed: %s' % test.get('description'))
-        error(result)
-        error(test.get('expected'))
-
+    assert result == test.get('expected'), error(u'\nTest %d Failed: %s\n%s\n%s' % (attempted, test.get('description'), result, test.get('expected')))
 
 # extractor section
 extractor_file = open(os.path.join('twitter-text-conformance', 'extract.yml'), 'r')
@@ -96,6 +98,6 @@ for section in autolink_tests.get('tests'):
         elif section == 'json':
             execute_test(autolink.auto_link_with_json(json.loads(test.get('json')), autolink_options), test)
 
-sys.stdout.write(u'\033[0m-------\n%d tests run. \033[92m%d passed. \033[91m%s failed\033[0m\n' % (attempted, passed, failed))
+sys.stdout.write(u'\033[0m-------\n\033[92m%d tests passed.\033[0m\n' % attempted)
 sys.stdout.flush()
-sys.exit(os.EX_OK if passed == attempted else os.EX_SOFTWARE)
+sys.exit(os.EX_OK)
