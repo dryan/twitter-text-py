@@ -344,7 +344,7 @@ class Autolink(object):
             #   …
             # </span>
 
-            return u'<span class="tco-ellipsis">%s<span %s></span></span><span %s>%s</span><span class="js-display-url">%s</span><span %s>%s</span><span class="tco-ellipsis"><span %s>&nbsp;</span>%s</span>' % (preceding_ellipsis, invisible_tag_attrs, invisible_tag_attrs, self._html_escape(before_display_url), self._html_escape(display_url_sans_ellipses), invisible_tag_attrs, self._html_escape(after_display_url), invisible_tag_attrs, following_ellipsis)
+            return u"<span class='tco-ellipsis'>%s<span %s>&nbsp;</span></span><span %s>%s</span><span class='js-display-url'>%s</span><span %s>%s</span><span class='tco-ellipsis'><span %s>&nbsp;</span>%s</span>" % (preceding_ellipsis, invisible_tag_attrs, invisible_tag_attrs, self._html_escape(before_display_url), self._html_escape(display_url_sans_ellipses), invisible_tag_attrs, self._html_escape(after_display_url), invisible_tag_attrs, following_ellipsis)
         else:
             return self._html_escape(display_url)
 
