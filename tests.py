@@ -35,13 +35,12 @@ def error(text):
 
 attempted = 0
 
-def assert_equal_without_attribute_order(expected, actual, failure_message = None):
-    assert equal_nodes(BeautifulSoup(expected), BeautifulSoup(actual)), error(u'Test %d Failed: %s\n%s\n%s' % (attempted, test.get('description'), result, test.get('expected')))
+def assert_equal_without_attribute_order(result, test, failure_message = None):
+    # Beautiful Soup sorts the attributes for us so we can skip all the hoops the ruby version jumps through
+    assert BeautifulSoup(result) == BeautifulSoup(test.get('expected')), error(u'Test %d Failed: %s' % (attempted, test.get('description')))
 
-def equal_nodes(expected, actual):
-    pass
 
-def execute_test(result, test):
+def assert_equal(result, test):
     global attempted
     attempted += 1
     assert result == test.get('expected'), error(u'\nTest %d Failed: %s' % (attempted, test.get('description')))
@@ -62,25 +61,25 @@ for section in extractor_tests.get('tests'):
             continue
         extractor = twitter_text.extractor.Extractor(test.get('text'))
         if section == 'mentions':
-            execute_test(extractor.extract_mentioned_screen_names(), test)
+            assert_equal(extractor.extract_mentioned_screen_names(), test)
         elif section == 'mentions_with_indices':
-            execute_test(extractor.extract_mentioned_screen_names_with_indices(), test)
+            assert_equal(extractor.extract_mentioned_screen_names_with_indices(), test)
         elif section == 'mentions_or_lists_with_indices':
-            execute_test(extractor.extract_mentions_or_lists_with_indices(), test)
+            assert_equal(extractor.extract_mentions_or_lists_with_indices(), test)
         elif section == 'replies':
-            execute_test(extractor.extract_reply_screen_name(), test)
+            assert_equal(extractor.extract_reply_screen_name(), test)
         elif section == 'urls':
-            execute_test(extractor.extract_urls(), test)
+            assert_equal(extractor.extract_urls(), test)
         elif section == 'urls_with_indices':
-            execute_test(extractor.extract_urls_with_indices(), test)
+            assert_equal(extractor.extract_urls_with_indices(), test)
         elif section == 'hashtags':
-            execute_test(extractor.extract_hashtags(), test)
+            assert_equal(extractor.extract_hashtags(), test)
         elif section == 'cashtags':
-            execute_test(extractor.extract_cashtags(), test)
+            assert_equal(extractor.extract_cashtags(), test)
         elif section == 'hashtags_with_indices':
-            execute_test(extractor.extract_hashtags_with_indices(), test)
+            assert_equal(extractor.extract_hashtags_with_indices(), test)
         elif section == 'cashtags_with_indices':
-            execute_test(extractor.extract_cashtags_with_indices(), test)
+            assert_equal(extractor.extract_cashtags_with_indices(), test)
 
 # autolink section
 autolink_file = open(os.path.join('twitter-text-conformance', 'autolink.yml'), 'r')
@@ -99,19 +98,19 @@ for section in autolink_tests.get('tests'):
             continue
         autolink = twitter_text.autolink.Autolink(test.get('text'))
         if section == 'usernames':
-            execute_test(autolink.auto_link_usernames_or_lists(autolink_options), test)
+            assert_equal_without_attribute_order(autolink.auto_link_usernames_or_lists(autolink_options), test)
         elif section == 'cashtags':
-            execute_test(autolink.auto_link_cashtags(autolink_options), test)
+            assert_equal_without_attribute_order(autolink.auto_link_cashtags(autolink_options), test)
         elif section == 'urls':
-            execute_test(autolink.auto_link_urls(autolink_options), test)
+            assert_equal_without_attribute_order(autolink.auto_link_urls(autolink_options), test)
         elif section == 'hashtags':
-            execute_test(autolink.auto_link_hashtags(autolink_options), test)
+            assert_equal_without_attribute_order(autolink.auto_link_hashtags(autolink_options), test)
         elif section == 'all':
-            execute_test(autolink.auto_link(autolink_options), test)
+            assert_equal_without_attribute_order(autolink.auto_link(autolink_options), test)
         elif section == 'lists':
-            execute_test(autolink.auto_link_usernames_or_lists(autolink_options), test)
+            assert_equal_without_attribute_order(autolink.auto_link_usernames_or_lists(autolink_options), test)
         elif section == 'json':
-            execute_test(autolink.auto_link_with_json(json.loads(test.get('json')), autolink_options), test)
+            assert_equal_without_attribute_order(autolink.auto_link_with_json(json.loads(test.get('json')), autolink_options), test)
 
 sys.stdout.write(u'\033[0m-------\n\033[92m%d tests passed.\033[0m\n' % attempted)
 sys.stdout.flush()
