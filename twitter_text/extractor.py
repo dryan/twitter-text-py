@@ -12,7 +12,7 @@ class Extractor(object):
     def __init__(self, text):
         self.text = force_unicode(text)
 
-    def remove_overlapping_entities(self, entities):
+    def _remove_overlapping_entities(self, entities):
         """
         Remove overlapping entities.
         This returns a new list with no overlapping entities.
@@ -48,7 +48,7 @@ class Extractor(object):
                         self.extract_mentions_or_lists_with_indices() + \
                         self.extract_cashtags_with_indices()
 
-        entities    =   self.remove_overlapping_entities(entities)
+        entities    =   self._remove_overlapping_entities(entities)
 
         for entity in entities:
             entity  =   transform(entity)
@@ -229,7 +229,7 @@ class Extractor(object):
             if len(urls):
                 tags = tags + urls
                 # remove duplicates
-                tags = self.remove_overlapping_entities(tags)
+                tags = self._remove_overlapping_entities(tags)
                 tags = [tag for tag in tags if 'hashtag' in tag]
 
         return tags
