@@ -1,76 +1,75 @@
 # encoding=utf-8
 
 import re
+from HTMLParser import HTMLParser
 
 from twitter_text.regex import UNICODE_SPACES
 from twitter_text.unicode import force_unicode
 
+DEFAULT_HIGHLIGHT_TAG = 'em'
+
+# from http://stackoverflow.com/questions/753052/strip-html-from-strings-in-python
+class MLStripper(HTMLParser):
+    def __init__(self):
+        self.reset()
+        self.fed = []
+    def handle_data(self, d):
+        self.fed.append(d)
+    def get_data(self):
+        return ''.join(self.fed)
+
+def strip_tags(html):
+    s = MLStripper()
+    s.feed(html)
+    return s.get_data()
+
 class HitHighlighter(object):
-
-    DEFAULT_HIGHLIGHT_TAG = 'em'
-
-    DEFAULT_HIGHLIGHT_CLASS = 'search-hit'
-    
     def __init__(self, text, **kwargs):
         self.text = force_unicode(text)
         self.parent = kwargs.get('parent', False)
 
-    def hit_highlight(self, query, **kwargs):
-        """
-        Add <em></em> tags around occurrences of query provided in the text except for occurrences inside of hashtags.
-        
-        The <em></em> tags can be overridden using the highlight_tag kwarg. For example:
-        
-        python> HitHighlighter('test hit here').hit_highlight('hit', highlight_tag = 'strong', highlight_class = 'search-term')
-                => "test <strong class='search-term'>hit</strong> here"
-        """
-        defaults = {
-            'highlight_tag': kwargs.get('highlight_tag', self.DEFAULT_HIGHLIGHT_TAG).lower(),
-            'highlight_class': kwargs.get('highlight_class', self.DEFAULT_HIGHLIGHT_CLASS).lower(),
-        }
-        for key, val in defaults.items():
-            if not key in kwargs:
-                kwargs[key] =   val
-        del(defaults)
-        
-        tags = ( u'<%s class="%s">' % ( kwargs.get('highlight_tag'), kwargs.get('highlight_class') ), u'</%s>' % kwargs.get('highlight_tag') )
-        
-        tag_search = re.compile(r'(<[^>]+>)')
+    def hit_highlight(self, hits = [], **kwargs):
+        if not hits:
+            return self.text
 
-        assert ( not self.parent or not getattr(self.parent, 'has_been_linked', False) ) and tag_search.match(self.text) is None, 'This text has already has HTML tags present. We can\'t highlight that reliably.' # make sure links have not already been run on this text
-        del(tag_search)
-        
-        query_search = re.compile(ur'%s' % query, re.IGNORECASE)
-        matches = query_search.finditer( self.text )
-        wrapped_string = u'%s%s%s'
-        UNICODE_SPACES.append(hex(20))
-        len_diff = 0 # used to update the match offsets after the new wrapped text is inserted
-        for match in matches:
-            hashtag = False
-            i = match.start() + len_diff - 1
-            while i >= 0:
-                if hex(ord(self.text[i])) in [hex(ord('#')), '0xff03']: # we don't want to wrap parts of hashtags as the link text will be wrong
-                    hashtag = True
-                    break
-                elif hex(ord(self.text[i])) in UNICODE_SPACES:
-                    break
-                i -= 1
-            if not hashtag:
-                before = self.text[0:len_diff + match.start()]
-                try:
-                    after = self.text[len_diff + match.end():len(self.text)]
-                except:
-                    after = ''
-                len_diff += len(before + wrapped_string % ( tags[0], match.group(0), tags[1] ) + after) - len(self.text)
-                self.text = before + wrapped_string % ( tags[0], match.group(0), tags[1] ) + after
+        tag_name = kwargs.get('tag', DEFAULT_HIGHLIGHT_TAG)
+        tags = [u'<%s>' % tag_name, u'</%s>' % tag_name]
 
-        del(query_search)
-        del(matches)
-        
-        if self.parent and hasattr(self.parent, 'text'):
-            self.parent.text = self.text
-            
-        del(tags)
-        del(kwargs)
-        
+        text = self.text
+        chunks = re.split(r'[<>]', text)
+        text_chunks = []
+        for index, chunk in enumerate(chunks):
+            if not index % 2:
+                text_chunks.append(chunk)
+        for hit in sorted(hits, key = lambda chunk: chunk[1], reverse = True):
+            hit_start, hit_end = hit
+            placed = 0
+            for index, chunk in enumerate(chunks):
+                if placed == 2:
+                    continue
+                if index % 2:
+                    # we're inside a <tag>
+                    continue
+                chunk_start = len(u''.join(text_chunks[0:index / 2]))
+                chunk_end = chunk_start + len(chunk)
+                if hit_start >= chunk_start and hit_start < chunk_end:
+                    chunk = chunk[:hit_start - chunk_start] + tags[0] + chunk[hit_start - chunk_start:]
+                    if hit_end < chunk_end:
+                        hit_end += len(tags[0])
+                        chunk_end += len(tags[0])
+                    placed = 1
+                if hit_end > chunk_start and hit_end < chunk_end:
+                    chunk = chunk[:hit_end - chunk_start] + tags[1] + chunk[hit_end - chunk_start:]
+                    placed = 2
+                chunks[index] = chunk
+            if placed == 1:
+                chunks[-1] = chunks[-1] + tags[1]
+        result = []
+        for index, chunk in enumerate(chunks):
+            if index % 2:
+                # we're inside a <tag>
+                result.append(u'<%s>' % chunk)
+            else:
+                result.append(chunk)
+        self.text = u''.join(result)
         return self.text
