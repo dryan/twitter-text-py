@@ -29,8 +29,16 @@ class HitHighlighter(object):
         self.parent = kwargs.get('parent', False)
 
     def hit_highlight(self, hits = [], **kwargs):
-        if not hits:
+        if not hits and not kwargs.get('query'):
             return self.text
+
+        if not hits and kwargs.get('query'):
+            stripped_text   =   strip_tags(self.text)
+            for match in re.finditer(ur'%s' % kwargs.get('query'), stripped_text):
+                hits.append(match.span())
+
+        if hits and not type(hits) == list:
+            raise Exception('The syntax for the hit_highlight method has changed. You must pass in a list of lists containing the indices of the strings you want to match.')
 
         tag_name = kwargs.get('tag', DEFAULT_HIGHLIGHT_TAG)
         tags = [u'<%s>' % tag_name, u'</%s>' % tag_name]
