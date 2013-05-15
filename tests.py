@@ -1,6 +1,6 @@
 # encoding=utf-8
 
-import twitter_text, sys, os, json, argparse
+import twitter_text, sys, os, json, argparse, codecs, re
 from twitter_text.unicode import force_unicode
 
 narrow_build = True
@@ -11,13 +11,19 @@ except:
     pass
 
 parser = argparse.ArgumentParser(description = u'Run the integration tests for twitter_text')
-parser.add_argument('--ignore-narrow-errors', '-i', help = u'Ignore errors caused by narrow builds', default = False, type = bool)
+parser.add_argument('--ignore-narrow-errors', '-i', help = u'Ignore errors caused by narrow builds', default = False, action = 'store_true')
 args = parser.parse_args()
 
 try:
     import yaml
 except ImportError:
     raise Exception('You need to install pyaml to run the tests')
+# from http://stackoverflow.com/questions/2890146/how-to-force-pyyaml-to-load-strings-as-unicode-objects
+from yaml import Loader, SafeLoader
+def construct_yaml_str(self, node):
+    return self.construct_scalar(node)
+Loader.add_constructor(u'tag:yaml.org,2002:str', construct_yaml_str)
+SafeLoader.add_constructor(u'tag:yaml.org,2002:str', construct_yaml_str)
 
 try:
     from bs4 import BeautifulSoup
@@ -36,17 +42,22 @@ def error(text):
 attempted = 0
 
 def assert_equal_without_attribute_order(result, test, failure_message = None):
+    global attempted
+    attempted += 1
     # Beautiful Soup sorts the attributes for us so we can skip all the hoops the ruby version jumps through
     assert BeautifulSoup(result) == BeautifulSoup(test.get('expected')), error(u'Test %d Failed: %s' % (attempted, test.get('description')))
-
+    sys.stdout.write(success(u'Test %d Passed: %s' % (attempted, test.get('description'))))
+    sys.stdout.flush()
 
 def assert_equal(result, test):
     global attempted
     attempted += 1
-    assert result == test.get('expected'), error(u'\nTest %d Failed: %s' % (attempted, test.get('description')))
+    assert result == test.get('expected'), error(u'\nTest %d Failed: %s%s' % (attempted, test.get('description'), u'\n%s' % test.get('hits') if test.get('hits') else ''))
+    sys.stdout.write(success(u'Test %d Passed: %s' % (attempted, test.get('description'))))
+    sys.stdout.flush()
 
 # extractor section
-extractor_file = open(os.path.join('twitter-text-conformance', 'extract.yml'), 'r')
+extractor_file = codecs.open(os.path.join('twitter-text-conformance', 'extract.yml'), 'r', encoding = 'utf-8')
 extractor_tests = yaml.load(extractor_file.read())
 extractor_file.close()
 
@@ -82,7 +93,7 @@ for section in extractor_tests.get('tests'):
             assert_equal(extractor.extract_cashtags_with_indices(), test)
 
 # autolink section
-autolink_file = open(os.path.join('twitter-text-conformance', 'autolink.yml'), 'r')
+autolink_file = codecs.open(os.path.join('twitter-text-conformance', 'autolink.yml'), 'r', encoding = 'utf-8')
 autolink_tests = yaml.load(autolink_file.read())
 autolink_file.close()
 
@@ -112,6 +123,50 @@ for section in autolink_tests.get('tests'):
         elif section == 'json':
             assert_equal_without_attribute_order(autolink.auto_link_with_json(json.loads(test.get('json')), autolink_options), test)
 
+# hit_highlighting section
+hit_highlighting_file = codecs.open(os.path.join('twitter-text-conformance', 'hit_highlighting.yml'), 'r', encoding = 'utf-8')
+hit_highlighting_tests = yaml.load(hit_highlighting_file.read())
+hit_highlighting_file.close()
+
+sys.stdout.write('\nTesting Hit Highlighting\n')
+sys.stdout.flush()
+
+for section in hit_highlighting_tests.get('tests'):
+    sys.stdout.write('\nTesting Hit Highlighting: %s\n' % section)
+    for test in hit_highlighting_tests.get('tests').get(section):
+        hit_highlighter = twitter_text.highlighter.HitHighlighter(test.get('text'))
+        if section == 'plain_text':
+            assert_equal(hit_highlighter.hit_highlight(hits = test.get('hits')), test)
+        elif section == 'with_links':
+            assert_equal_without_attribute_order(hit_highlighter.hit_highlight(hits = test.get('hits')), test)
+
+# validation section
+if not narrow_build:
+    validate_file = codecs.open(os.path.join('twitter-text-conformance', 'validate.yml'), 'r', encoding = 'utf-8')
+    validate_file_contents = validate_file.read()
+    validate_tests = yaml.load(re.sub(ur'\\n', '\n', validate_file_contents.encode('unicode-escape')))
+    validate_file.close()
+
+    sys.stdout.write('\nTesting Validation\n')
+    sys.stdout.flush()
+
+    for section in validate_tests.get('tests'):
+        sys.stdout.write('\nTesting Validation: %s\n' % section)
+        for test in validate_tests.get('tests').get(section):
+            validator = twitter_text.validation.Validation(test.get('text'))
+            if section == 'tweets':
+                assert_equal(not validator.tweet_invalid(), test)
+            elif section == 'usernames':
+                assert_equal(validator.valid_username(), test)
+            elif section == 'lists':
+                assert_equal(validator.valid_list(), test)
+            elif section == 'hashtags':
+                assert_equal(validator.valid_hashtag(), test)
+            elif section == 'urls':
+                assert_equal(validator.valid_url(), test)
 sys.stdout.write(u'\033[0m-------\n\033[92m%d tests passed.\033[0m\n' % attempted)
 sys.stdout.flush()
+if narrow_build:
+    sys.stdout.write(u'Validation tests had to be skipped because this a narrow Python build\n')
+    sys.stdout.flush()
 sys.exit(os.EX_OK)
