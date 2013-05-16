@@ -34,10 +34,10 @@ except ImportError:
         raise Exception('You need to install BeautifulSoup to run the tests')
 
 def success(text):
-    return (u'\033[92m%s\033[0m\n' % text)
+    return (u'\033[92m%s\033[0m\n' % text).encode('utf-8')
 
 def error(text):
-    return (u'\033[91m%s\033[0m\n' % text)
+    return (u'\033[91m%s\033[0m\n' % text).encode('utf-8')
 
 attempted = 0
 
