@@ -68,7 +68,9 @@ for section in extractor_tests.get('tests'):
     sys.stdout.write('\nTesting Extractor: %s\n' % section)
     sys.stdout.flush()
     for test in extractor_tests.get('tests').get(section):
-        if args.ignore_narrow_errors and section in ['hashtags'] and test.get('description') in ['Hashtag with ideographic iteration mark']:
+        if (args.ignore_narrow_errors or narrow_build) and section in ['hashtags'] and test.get('description') in ['Hashtag with ideographic iteration mark']:
+            sys.stdout.write('Skipping: %s\n' % test.get('description'))
+            sys.stdout.flush()
             continue
         extractor = twitter_text.extractor.Extractor(test.get('text'))
         if section == 'mentions':
@@ -105,7 +107,9 @@ autolink_options = {'suppress_no_follow': True}
 for section in autolink_tests.get('tests'):
     sys.stdout.write('\nTesting Autolink: %s\n' % section)
     for test in autolink_tests.get('tests').get(section):
-        if args.ignore_narrow_errors and section in ['hashtags'] and test.get('description') in ['Autolink a hashtag containing ideographic iteration mark']:
+        if (args.ignore_narrow_errors or narrow_build) and section in ['hashtags'] and test.get('description') in ['Autolink a hashtag containing ideographic iteration mark']:
+            sys.stdout.write('Skipping: %s\n' % test.get('description'))
+            sys.stdout.flush()
             continue
         autolink = twitter_text.autolink.Autolink(test.get('text'))
         if section == 'usernames':
@@ -149,7 +153,7 @@ try:
     validate_tests = yaml.load(re.sub(ur'\\n', '\n', validate_file_contents.encode('unicode-escape')))
     validate_file.close()
 except ValueError:
-    sys.stdout.write('Validation tests were skipped because of wide character issues\n')
+    sys.stdout.write('\nValidation tests were skipped because of wide character issues\n')
     sys.stdout.flush()
 
 if validate_tests:
