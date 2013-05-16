@@ -58,7 +58,7 @@ def assert_equal(result, test):
 
 # extractor section
 extractor_file = open(os.path.join('twitter-text-conformance', 'extract.yml'), 'r')
-extractor_tests = yaml.load(extractor_file.read())
+extractor_tests = yaml.load(force_unicode(extractor_file.read()))
 extractor_file.close()
 
 sys.stdout.write('Testing Extractor\n')
@@ -94,7 +94,7 @@ for section in extractor_tests.get('tests'):
 
 # autolink section
 autolink_file = open(os.path.join('twitter-text-conformance', 'autolink.yml'), 'r')
-autolink_tests = yaml.load(autolink_file.read())
+autolink_tests = yaml.load(force_unicode(autolink_file.read()))
 autolink_file.close()
 
 sys.stdout.write('\nTesting Autolink\n')
@@ -125,7 +125,7 @@ for section in autolink_tests.get('tests'):
 
 # hit_highlighting section
 hit_highlighting_file = open(os.path.join('twitter-text-conformance', 'hit_highlighting.yml'), 'r')
-hit_highlighting_tests = yaml.load(hit_highlighting_file.read())
+hit_highlighting_tests = yaml.load(force_unicode(hit_highlighting_file.read()))
 hit_highlighting_file.close()
 
 sys.stdout.write('\nTesting Hit Highlighting\n')
