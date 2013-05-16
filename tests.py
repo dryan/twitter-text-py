@@ -1,6 +1,6 @@
 # encoding=utf-8
 
-import twitter_text, sys, os, json, argparse, codecs, re
+import twitter_text, sys, os, json, argparse, re
 from twitter_text.unicode import force_unicode
 
 narrow_build = True
@@ -57,7 +57,7 @@ def assert_equal(result, test):
     sys.stdout.flush()
 
 # extractor section
-extractor_file = codecs.open(os.path.join('twitter-text-conformance', 'extract.yml'), 'r', encoding = 'utf-8')
+extractor_file = open(os.path.join('twitter-text-conformance', 'extract.yml'), 'r')
 extractor_tests = yaml.load(extractor_file.read())
 extractor_file.close()
 
@@ -93,7 +93,7 @@ for section in extractor_tests.get('tests'):
             assert_equal(extractor.extract_cashtags_with_indices(), test)
 
 # autolink section
-autolink_file = codecs.open(os.path.join('twitter-text-conformance', 'autolink.yml'), 'r', encoding = 'utf-8')
+autolink_file = open(os.path.join('twitter-text-conformance', 'autolink.yml'), 'r')
 autolink_tests = yaml.load(autolink_file.read())
 autolink_file.close()
 
@@ -124,7 +124,7 @@ for section in autolink_tests.get('tests'):
             assert_equal_without_attribute_order(autolink.auto_link_with_json(json.loads(test.get('json')), autolink_options), test)
 
 # hit_highlighting section
-hit_highlighting_file = codecs.open(os.path.join('twitter-text-conformance', 'hit_highlighting.yml'), 'r', encoding = 'utf-8')
+hit_highlighting_file = open(os.path.join('twitter-text-conformance', 'hit_highlighting.yml'), 'r')
 hit_highlighting_tests = yaml.load(hit_highlighting_file.read())
 hit_highlighting_file.close()
 
@@ -142,7 +142,7 @@ for section in hit_highlighting_tests.get('tests'):
 
 # validation section
 if not narrow_build:
-    validate_file = codecs.open(os.path.join('twitter-text-conformance', 'validate.yml'), 'r', encoding = 'utf-8')
+    validate_file = open(os.path.join('twitter-text-conformance', 'validate.yml'), 'r')
     validate_file_contents = validate_file.read()
     validate_tests = yaml.load(re.sub(ur'\\n', '\n', validate_file_contents.encode('unicode-escape')))
     validate_file.close()
