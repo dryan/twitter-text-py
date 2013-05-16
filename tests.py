@@ -141,12 +141,18 @@ for section in hit_highlighting_tests.get('tests'):
             assert_equal_without_attribute_order(hit_highlighter.hit_highlight(hits = test.get('hits')), test)
 
 # validation section
-if not narrow_build:
+validation_tested = False
+validate_tests = None
+try:
     validate_file = open(os.path.join('twitter-text-conformance', 'validate.yml'), 'r')
     validate_file_contents = validate_file.read()
     validate_tests = yaml.load(re.sub(ur'\\n', '\n', validate_file_contents.encode('unicode-escape')))
     validate_file.close()
+except ValueError:
+    sys.stdout.write('Validation tests were skipped because of wide character issues\n')
+    sys.stdout.flush()
 
+if validate_tests:
     sys.stdout.write('\nTesting Validation\n')
     sys.stdout.flush()
 
@@ -164,9 +170,7 @@ if not narrow_build:
                 assert_equal(validator.valid_hashtag(), test)
             elif section == 'urls':
                 assert_equal(validator.valid_url(), test)
+
 sys.stdout.write(u'\033[0m-------\n\033[92m%d tests passed.\033[0m\n' % attempted)
 sys.stdout.flush()
-if narrow_build:
-    sys.stdout.write(u'Validation tests had to be skipped because this a narrow Python build\n')
-    sys.stdout.flush()
 sys.exit(os.EX_OK)
