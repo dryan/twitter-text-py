@@ -1,5 +1,7 @@
 A port of the Ruby gem [twitter-text-rb](https://github.com/twitter/twitter-text-rb) to Python.
 
+[![Build Status](https://travis-ci.org/dryan/twitter-text-py.png?branch=master)](https://travis-ci.org/dryan/twitter-text-py)
+
 # Usage
 
 You can either call a new TwitterText object with the text of the tweet you want to process `TwitterText('twitter-text-py is #awesome')` or use any of the submodule objects directly (Autolink, Extractor, HitHighlighter or Validation), passing in the tweet text as an argument.
