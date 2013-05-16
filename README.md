@@ -1,6 +1,6 @@
 A port of the Ruby gem [twitter-text-rb](http://github.com/mzsanford/twitter-text-rb) to Python.
 
-[![Build Status](https://travis-ci.org/dryan/twitter-text-py.png?branch=dryan/updating-regexes)](https://travis-ci.org/dryan/twitter-text-py)
+[![Build Status](https://travis-ci.org/dryan/twitter-text-py.png?branch=master)](https://travis-ci.org/dryan/twitter-text-py)
 
 # Usage
 
