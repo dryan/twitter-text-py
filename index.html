@@ -33,11 +33,15 @@
       <section id="main_content" class="inner">
         <p>A port of the Ruby gem <a href="https://github.com/twitter/twitter-text-rb">twitter-text-rb</a> to Python.</p>
 
-<h1>Changes in 2.0</h1>
+<p><a href="https://travis-ci.org/dryan/twitter-text-py"><img src="https://travis-ci.org/dryan/twitter-text-py.png?branch=master" alt="Build Status"></a></p>
+
+<h1>
+<a name="changes-in-20" class="anchor" href="#changes-in-20"><span class="octicon octicon-link"></span></a>Changes in 2.0</h1>
 
 <p>See the <a href="https://github.com/dryan/twitter-text-py/pull/17">pull request</a> for details.</p>
 
-<h1>Usage</h1>
+<h1>
+<a name="usage" class="anchor" href="#usage"><span class="octicon octicon-link"></span></a>Usage</h1>
 
 <p>You can either call a new TwitterText object with the text of the tweet you want to process <code>TwitterText('twitter-text-py is #awesome')</code> or use any of the submodule objects directly (Autolink, Extractor, HitHighlighter or Validation), passing in the tweet text as an argument.</p>
 
@@ -51,9 +55,11 @@
 
 <p>You can test that the library is working correctly by running <code>python tests.py</code> inside the <code>twitter_text</code> directory.</p>
 
-<h2>TwitterText(text)</h2>
+<h2>
+<a name="twittertexttext" class="anchor" href="#twittertexttext"><span class="octicon octicon-link"></span></a>TwitterText(text)</h2>
 
-<h3>Properties:</h3>
+<h3>
+<a name="properties" class="anchor" href="#properties"><span class="octicon octicon-link"></span></a>Properties:</h3>
 
 <ul>
 <li>text:             the original text you passed in, or the modified version if you've called any functions on the object.</li>
@@ -70,11 +76,13 @@
 </li>
 <li>validation:       property pointing to a Validation object initialized with <code>text</code>
 </li>
-</ul><h2>Autolink(text)</h2>
+</ul><h2>
+<a name="autolinktext" class="anchor" href="#autolinktext"><span class="octicon octicon-link"></span></a>Autolink(text)</h2>
 
 <p>This object modifies the text passed to it (and the parent TwitterText.text if present).</p>
 
-<h3>Defaults</h3>
+<h3>
+<a name="defaults" class="anchor" href="#defaults"><span class="octicon octicon-link"></span></a>Defaults</h3>
 
 <p>These may be overridden by kwargs on a particular method.</p>
 
@@ -83,7 +91,8 @@
 <li>list_class        =   'list-slug'</li>
 <li>username_class    =   'username'</li>
 <li>hashtag_class     =   'hashtag'</li>
-</ul><h3>Methods:</h3>
+</ul><h3>
+<a name="methods" class="anchor" href="#methods"><span class="octicon octicon-link"></span></a>Methods:</h3>
 
 <p><strong>auto_link(self, **kwargs)</strong></p>
 
@@ -125,11 +134,13 @@
 
 <p>Add <code>&lt;a&gt;&lt;/a&gt;</code> tags around the URLs in the provided text. Any elements in kwargs (except @supress_no_follow@) will be converted to HTML attributes and place in the <code>&lt;a&gt;</code> tag. Unless kwargs contains @suppress_no_follow@ the rel="nofollow" attribute will be added.</p>
 
-<h2>Extractor</h2>
+<h2>
+<a name="extractor" class="anchor" href="#extractor"><span class="octicon octicon-link"></span></a>Extractor</h2>
 
 <p>This object does not modify the text passed to it (or the parent TwitterText.text if present).</p>
 
-<h3>Methods</h3>
+<h3>
+<a name="methods-1" class="anchor" href="#methods-1"><span class="octicon octicon-link"></span></a>Methods</h3>
 
 <p><strong>extract_mentioned_screen_names</strong></p>
 
@@ -197,16 +208,19 @@
 
 <p>If a transform is given then it will be called for each hashtag.</p>
 
-<h2>HitHighlighter</h2>
+<h2>
+<a name="hithighlighter" class="anchor" href="#hithighlighter"><span class="octicon octicon-link"></span></a>HitHighlighter</h2>
 
-<h3>Defaults</h3>
+<h3>
+<a name="defaults-1" class="anchor" href="#defaults-1"><span class="octicon octicon-link"></span></a>Defaults</h3>
 
 <p>These may be overridden by kwargs on a particular method.</p>
 
 <ul>
 <li>highlight_tag = 'em'</li>
 <li>highlight_class = 'search-hit'</li>
-</ul><h3>Methods</h3>
+</ul><h3>
+<a name="methods-2" class="anchor" href="#methods-2"><span class="octicon octicon-link"></span></a>Methods</h3>
 
 <p><strong>hit_highlight(self, query, **kwargs)</strong></p>
 
@@ -218,9 +232,11 @@
         =\&gt; "test &lt;strong class='search-term'&gt;hit&lt;/strong&gt; here"
 </code></pre>
 
-<h2>Validation</h2>
+<h2>
+<a name="validation" class="anchor" href="#validation"><span class="octicon octicon-link"></span></a>Validation</h2>
 
-<h3>Methods</h3>
+<h3>
+<a name="methods-3" class="anchor" href="#methods-3"><span class="octicon octicon-link"></span></a>Methods</h3>
 
 <p><strong>tweet_length</strong></p>
 
@@ -264,7 +280,7 @@
           </script>
           <script type="text/javascript">
             try {
-              var pageTracker = _gat._getTracker("UA-3625251-4");
+              var pageTracker = _gat._getTracker("UA-3625251-12");
             pageTracker._trackPageview();
             } catch(err) {}
           </script>
