@@ -16,7 +16,7 @@ def twitter_text(text, search_query = False):
     """
     tt = TwitterText(text)
     if search_query:
-        tt.highlighter.hit_highlight(query = search_query)
-    tt.autolink.auto_link()
+        tt.text     =   tt.highlighter.hit_highlight(query = search_query)
+    tt.text         =   tt.autolink.auto_link()
     return tt.text
 twitter_text.is_safe = True
