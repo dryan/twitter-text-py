@@ -62,11 +62,11 @@ class HitHighlighter(object):
                 chunk_end = chunk_start + len(chunk)
                 if hit_start >= chunk_start and hit_start < chunk_end:
                     chunk = chunk[:hit_start - chunk_start] + tags[0] + chunk[hit_start - chunk_start:]
-                    if hit_end < chunk_end:
+                    if hit_end <= chunk_end:
                         hit_end += len(tags[0])
                         chunk_end += len(tags[0])
                     placed = 1
-                if hit_end > chunk_start and hit_end < chunk_end:
+                if hit_end > chunk_start and hit_end <= chunk_end:
                     chunk = chunk[:hit_end - chunk_start] + tags[1] + chunk[hit_end - chunk_start:]
                     placed = 2
                 chunks[index] = chunk
