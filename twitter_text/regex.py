@@ -228,7 +228,7 @@ REGEXEN['valid_url'] = re.compile(ur'((%s)((https?:\/\/)?(%s)(?::(%s))?(/%s*)?(\
 #   $8 Query String
 
 REGEXEN['cashtag'] = re.compile(ur'[a-z]{1,6}(?:[._][a-z]{1,2})?', re.IGNORECASE)
-REGEXEN['valid_cashtag'] = re.compile(ur'(^|[%s])(\$)(%s)(?=$|\s|[%s])' % (REGEXEN['spaces'].pattern, REGEXEN['cashtag'].pattern, PUNCTUATION_CHARS), re.IGNORECASE)
+REGEXEN['valid_cashtag'] = re.compile(ur'(^|[%s])(\$|＄|﹩)(%s)(?=$|\s|[%s])' % (REGEXEN['spaces'].pattern, REGEXEN['cashtag'].pattern, PUNCTUATION_CHARS), re.IGNORECASE)
 
 # These URL validation pattern strings are based on the ABNF from RFC 3986
 REGEXEN['validate_url_unreserved'] = re.compile(ur'[a-z0-9\-._~]', re.IGNORECASE | re.UNICODE)
