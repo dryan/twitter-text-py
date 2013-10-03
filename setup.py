@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
  
 setup(
     name='twitter-text-py',
-    version='2.0.1',
+    version='2.0.2',
     description='A library for auto-converting URLs, mentions, hashtags, lists, etc. in Twitter text. Also does tweet validation and search term highlighting.',
     author='Daniel Ryan',
     author_email='dryan@dryan.com',
