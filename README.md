@@ -106,7 +106,7 @@ __extract_mentioned_screen_names_with_indices__
 Extracts a list of all usernames mentioned in the Tweet text along with the indices for where the mention occurred in the format:
 
     {
-        'username': username_string,
+        'screen_name': username_string,
         'indicies': ( start_postion, end_position )
     }
 
