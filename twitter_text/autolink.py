@@ -415,8 +415,8 @@ class Autolink(object):
 
     def _link_to_text(self, entity, text, href, attributes = {}, options = {}):
         attributes['href'] = href
-        if options.get('link_attributes_transform'):
-            attributes = options.get('link_attributes_transform')(entity, attributes)
+        if options.get('link_attribute_transform'):
+            attributes = options.get('link_attribute_transform')(entity, attributes)
         text = options.get('link_text_transform', default_transform)(entity, text)
         return u'<a %s>%s</a>' % (self._tag_attrs(attributes), text)
 
